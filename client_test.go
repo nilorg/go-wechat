@@ -1,8 +1,3 @@
-# go-wechat
-🎉微信Api请求基础SDK
-
-# Example 🌰
-```go
 package wechat
 
 import (
@@ -28,4 +23,3 @@ func TestExecute(t *testing.T) {
 	}
 	fmt.Println(json)
 }
-```
