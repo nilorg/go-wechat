@@ -5,24 +5,23 @@ import (
 	"net/url"
 
 	wechat "github.com/nilorg/go-wechat"
-	"github.com/nilorg/go-wechat/context"
 )
 
 // Qrcode 二维码
 type Qrcode struct {
-	context *context.Context
+	client *wechat.Client
 }
 
 // NewQrcode ...
-func NewQrcode(c *context.Context) *Qrcode {
+func NewQrcode(c *wechat.Client) *Qrcode {
 	return &Qrcode{
-		context: c,
+		client: c,
 	}
 }
 
 // CreateTemp 生成临时带参数的二维码
 func (q *Qrcode) CreateTemp(req *TempQrcodeRequest) (*TempQrcodeReply, error) {
-	result, err := wechat.PostJSON("https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token="+q.context.GetAccessToken(), req)
+	result, err := wechat.PostJSON("https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token="+q.client.GetAccessToken(), req)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +44,7 @@ func (q *Qrcode) Download(ticket string) ([]byte, error) {
 
 // CreateLimit 生成一个永久带参数的二维码
 func (q *Qrcode) CreateLimit(req *LimitQrcodeRequest) (*LimitQrcodeReply, error) {
-	result, err := wechat.PostJSON("https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token="+q.context.GetAccessToken(), req)
+	result, err := wechat.PostJSON("https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token="+q.client.GetAccessToken(), req)
 	if err != nil {
 		return nil, err
 	}

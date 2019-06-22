@@ -1,17 +1,17 @@
 package message
 
 import (
-	"github.com/nilorg/go-wechat/context"
+	wechat "github.com/nilorg/go-wechat"
 )
 
 // Message 消息
 type Message struct {
-	context *context.Context
+	client *wechat.Client
 }
 
 // NewMessage ...
-func NewMessage(c *context.Context) *Message {
+func NewMessage(c *wechat.Client) *Message {
 	return &Message{
-		context: c,
+		client: c,
 	}
 }
