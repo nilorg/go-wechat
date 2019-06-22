@@ -2,24 +2,23 @@ package custom
 
 import (
 	wechat "github.com/nilorg/go-wechat"
-	"github.com/nilorg/go-wechat/context"
 )
 
 // Custom 客服
 type Custom struct {
-	context *context.Context
+	client *wechat.Client
 }
 
 // NewCustom ...
-func NewCustom(c *context.Context) *Custom {
+func NewCustom(c *wechat.Client) *Custom {
 	return &Custom{
-		context: c,
+		client: c,
 	}
 }
 
 // send 发消息
 func (c *Custom) send(req interface{}) error {
-	_, err := wechat.PostJSON("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token="+c.context.GetAccessToken(), req)
+	_, err := wechat.PostJSON("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token="+c.client.GetAccessToken(), req)
 	return err
 }
 

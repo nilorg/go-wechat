@@ -6,24 +6,23 @@ import (
 	"io"
 
 	wechat "github.com/nilorg/go-wechat"
-	"github.com/nilorg/go-wechat/context"
 )
 
 // Material 素材
 type Material struct {
-	context *context.Context
+	client *wechat.Client
 }
 
 // NewMaterial ...
-func NewMaterial(c *context.Context) *Material {
+func NewMaterial(c *wechat.Client) *Material {
 	return &Material{
-		context: c,
+		client: c,
 	}
 }
 
 // AddNews 新增永久图文素材
 func (m *Material) AddNews(reqs []*NewsRequest) (*NewsReply, error) {
-	result, err := wechat.PostJSON("https://api.weixin.qq.com/cgi-bin/material/add_news?access_token="+m.context.GetAccessToken(), map[string]interface{}{
+	result, err := wechat.PostJSON("https://api.weixin.qq.com/cgi-bin/material/add_news?access_token="+m.client.GetAccessToken(), map[string]interface{}{
 		"articles": reqs,
 	})
 	if err != nil {
@@ -37,7 +36,7 @@ func (m *Material) AddNews(reqs []*NewsRequest) (*NewsReply, error) {
 // UploadImg 上传图文消息内的图片获取URL
 // 本接口所上传的图片不占用公众号的素材库中图片数量的5000个的限制。图片仅支持jpg/png格式，大小必须在1MB以下。
 func (m *Material) UploadImg(filename string, srcFile io.Reader) (*UploadImgReply, error) {
-	result, err := wechat.Upload("https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token="+m.context.GetAccessToken(), filename, nil, srcFile)
+	result, err := wechat.Upload("https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token="+m.client.GetAccessToken(), filename, nil, srcFile)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +52,7 @@ func (m *Material) UploadFile(filename, fileType string, description *wechat.Vid
 		return nil, errors.New("请填写视频素材的描述信息")
 	}
 
-	result, err := wechat.Upload("https://api.weixin.qq.com/cgi-bin/material/add_material?access_token="+m.context.GetAccessToken()+"&type="+fileType, filename, description, srcFile)
+	result, err := wechat.Upload("https://api.weixin.qq.com/cgi-bin/material/add_material?access_token="+m.client.GetAccessToken()+"&type="+fileType, filename, description, srcFile)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +71,7 @@ func (m *Material) UploadFile(filename, fileType string, description *wechat.Vid
 // 视频（video）：10MB，支持MP4格式
 // 缩略图（thumb）：64KB，支持JPG格式
 func (m *Material) UploadTempFile(filename, fileType string, srcFile io.Reader) (*UploadTempFileReply, error) {
-	result, err := wechat.Upload("https://api.weixin.qq.com/cgi-bin/media/upload?access_token="+m.context.GetAccessToken()+"&type="+fileType, filename, nil, srcFile)
+	result, err := wechat.Upload("https://api.weixin.qq.com/cgi-bin/media/upload?access_token="+m.client.GetAccessToken()+"&type="+fileType, filename, nil, srcFile)
 	if err != nil {
 		return nil, err
 	}
