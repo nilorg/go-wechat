@@ -3,18 +3,17 @@ package gin
 import (
 	ggin "github.com/gin-gonic/gin"
 	wechat "github.com/nilorg/go-wechat"
-	wxContext "github.com/nilorg/go-wechat/context"
 )
 
 var (
-	// WxContext 微信上下文
-	WxContext *wxContext.Context
+	// Client 微信上下文
+	Client *wechat.Client
 )
 
 // WechatContext include gin context and local context
 type WechatContext struct {
 	*ggin.Context
-	WxContext *wxContext.Context
+	WxClient *wechat.Client
 }
 
 // WechatContextFunction wechat gin.Contenxt and local model.Context
@@ -22,8 +21,8 @@ func WechatContextFunction(ctlFunc func(ctx *WechatContext)) ggin.HandlerFunc {
 	return func(ctx *ggin.Context) {
 
 		wechatContext := &WechatContext{
-			Context:   ctx,
-			WxContext: WxContext,
+			Context:  ctx,
+			WxClient: Client,
 		}
 
 		ctlFunc(wechatContext)
