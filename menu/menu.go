@@ -3,18 +3,17 @@ package menu
 import (
 	simplejson "github.com/bitly/go-simplejson"
 	wechat "github.com/nilorg/go-wechat"
-	"github.com/nilorg/go-wechat/context"
 )
 
 // Menu 菜单
 type Menu struct {
-	context *context.Context
+	cleint *wechat.Client
 }
 
 // NewMenu ...
-func NewMenu(c *context.Context) *Menu {
+func NewMenu(c *wechat.Client) *Menu {
 	return &Menu{
-		context: c,
+		cleint: c,
 	}
 }
 
@@ -29,7 +28,7 @@ func (m *Menu) Create(btns []interface{}) error {
 		"button": btns,
 	}
 
-	_, err := wechat.PostJSON("https://api.weixin.qq.com/cgi-bin/menu/create?access_token="+m.context.GetAccessToken(), data)
+	_, err := wechat.PostJSON("https://api.weixin.qq.com/cgi-bin/menu/create?access_token="+m.cleint.GetAccessToken(), data)
 	if err != nil {
 		return err
 	}
@@ -38,7 +37,7 @@ func (m *Menu) Create(btns []interface{}) error {
 
 // GetAll 获取所有菜单
 func (m *Menu) GetAll() (*simplejson.Json, error) {
-	bytes, err := wechat.Get("https://api.weixin.qq.com/cgi-bin/menu/get?access_token="+m.context.GetAccessToken(), nil)
+	bytes, err := wechat.Get("https://api.weixin.qq.com/cgi-bin/menu/get?access_token="+m.cleint.GetAccessToken(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +46,7 @@ func (m *Menu) GetAll() (*simplejson.Json, error) {
 
 // DeleteAll 删除全部菜单
 func (m *Menu) DeleteAll() error {
-	_, err := wechat.Get("https://api.weixin.qq.com/cgi-bin/menu/delete?access_token="+m.context.GetAccessToken(), nil)
+	_, err := wechat.Get("https://api.weixin.qq.com/cgi-bin/menu/delete?access_token="+m.cleint.GetAccessToken(), nil)
 	if err != nil {
 		return err
 	}
