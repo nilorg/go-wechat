@@ -10,11 +10,11 @@ import (
 
 // Material 素材
 type Material struct {
-	client *wechat.Client
+	client wechat.Clienter
 }
 
 // NewMaterial ...
-func NewMaterial(c *wechat.Client) *Material {
+func NewMaterial(c wechat.Clienter) *Material {
 	return &Material{
 		client: c,
 	}

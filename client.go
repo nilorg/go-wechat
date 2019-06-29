@@ -56,6 +56,11 @@ func checkConfig() error {
 	return nil
 }
 
+// Clienter 微信客户端接口
+type Clienter interface {
+	GetAccessToken() string
+}
+
 // Client 客户端
 type Client struct {
 	AppID       string
@@ -77,7 +82,7 @@ func (c *Client) startTicker() {
 }
 
 // NewClient 创建客户端
-func NewClient(appID, appSecret string) *Client {
+func NewClient(appID, appSecret string) Clienter {
 	client := &Client{
 		AppID:     appID,
 		AppSecret: appSecret,

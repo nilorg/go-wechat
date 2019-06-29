@@ -7,11 +7,11 @@ import (
 
 // Menu 菜单
 type Menu struct {
-	cleint *wechat.Client
+	cleint wechat.Clienter
 }
 
 // NewMenu ...
-func NewMenu(c *wechat.Client) *Menu {
+func NewMenu(c wechat.Clienter) *Menu {
 	return &Menu{
 		cleint: c,
 	}

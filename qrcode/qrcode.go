@@ -9,11 +9,11 @@ import (
 
 // Qrcode 二维码
 type Qrcode struct {
-	client *wechat.Client
+	client wechat.Clienter
 }
 
 // NewQrcode ...
-func NewQrcode(c *wechat.Client) *Qrcode {
+func NewQrcode(c wechat.Clienter) *Qrcode {
 	return &Qrcode{
 		client: c,
 	}

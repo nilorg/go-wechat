@@ -6,11 +6,11 @@ import (
 
 // Message 消息
 type Message struct {
-	client *wechat.Client
+	client wechat.Clienter
 }
 
 // NewMessage ...
-func NewMessage(c *wechat.Client) *Message {
+func NewMessage(c wechat.Clienter) *Message {
 	return &Message{
 		client: c,
 	}
