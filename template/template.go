@@ -6,11 +6,11 @@ import (
 
 // Template 消息
 type Template struct {
-	client *wechat.Client
+	client wechat.Clienter
 }
 
 // NewTemplate ...
-func NewTemplate(c *wechat.Client) *Template {
+func NewTemplate(c wechat.Clienter) *Template {
 	return &Template{
 		client: c,
 	}
