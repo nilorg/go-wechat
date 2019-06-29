@@ -6,11 +6,11 @@ import (
 
 // Custom 客服
 type Custom struct {
-	client *wechat.Client
+	client wechat.Clienter
 }
 
 // NewCustom ...
-func NewCustom(c *wechat.Client) *Custom {
+func NewCustom(c wechat.Clienter) *Custom {
 	return &Custom{
 		client: c,
 	}

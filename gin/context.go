@@ -7,13 +7,13 @@ import (
 
 var (
 	// Client 微信上下文
-	Client *wechat.Client
+	Client wechat.Clienter
 )
 
 // WechatContext include gin context and local context
 type WechatContext struct {
 	*ggin.Context
-	WxClient *wechat.Client
+	WxClient wechat.Clienter
 }
 
 // WechatContextFunction wechat gin.Contenxt and local model.Context
