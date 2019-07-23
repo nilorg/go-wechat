@@ -30,7 +30,7 @@ func init() {
 context := wechat.NewContext(context.Background(), client)
 client, err := wechat.FromContext(context)
 if err != nil {
-	fmt.Println("获取上下文中的微信客户端成功")
+	fmt.Println(err)
 }
 client.GetAccessToken()
 ```
