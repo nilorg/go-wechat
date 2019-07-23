@@ -59,6 +59,7 @@ func checkConfig() error {
 // Clienter 微信客户端接口
 type Clienter interface {
 	GetAccessToken() string
+	GetJsAPITicket() string
 }
 
 // Client 客户端

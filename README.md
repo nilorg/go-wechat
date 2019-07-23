@@ -33,6 +33,7 @@ if err != nil {
 	fmt.Println(err)
 }
 client.GetAccessToken()
+client.GetJsAPITicket()
 ```
 
 # 例子
