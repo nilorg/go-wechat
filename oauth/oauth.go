@@ -9,11 +9,11 @@ import (
 
 // OAuth 权限
 type OAuth struct {
-	client wechat.Configer
+	client wechat.Client
 }
 
 // NewOAuth ...
-func NewOAuth(c wechat.Configer) *OAuth {
+func NewOAuth(c wechat.Client) *OAuth {
 	return &OAuth{
 		client: c,
 	}
@@ -23,8 +23,8 @@ func NewOAuth(c wechat.Configer) *OAuth {
 // 通过code换取网页授权access_token
 func (o *OAuth) GetAccessToken(code string) (*AccessTokenReply, error) {
 	result, err := wechat.Get("https://api.weixin.qq.com/sns/oauth2/access_token", map[string]string{
-		"appid":      o.client.AppID(),
-		"secret":     o.client.AppSecret(),
+		"appid":      o.client.AppID,
+		"secret":     o.client.AppSecret,
 		"code":       code,
 		"grant_type": "authorization_code",
 	})
@@ -40,7 +40,7 @@ func (o *OAuth) GetAccessToken(code string) (*AccessTokenReply, error) {
 // 由于access_token拥有较短的有效期，当access_token超时后，可以使用refresh_token进行刷新，refresh_token有效期为30天，当refresh_token失效之后，需要用户重新授权。
 func (o *OAuth) RefreshToken(accessToken string) (*RefreshTokenReply, error) {
 	result, err := wechat.Get("https://api.weixin.qq.com/sns/oauth2/refresh_token", map[string]string{
-		"appid":         o.client.AppID(),
+		"appid":         o.client.AppID,
 		"grant_type":    "refresh_token",
 		"refresh_token": accessToken,
 	})
