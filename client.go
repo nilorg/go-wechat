@@ -56,6 +56,12 @@ func checkConfig() error {
 	return nil
 }
 
+// Configer 微信客户端配置接口
+type Configer interface {
+	AppID() string
+	AppSecret() string
+}
+
 // Clienter 微信客户端接口
 type Clienter interface {
 	GetAccessToken() string
@@ -64,8 +70,8 @@ type Clienter interface {
 
 // Client 客户端
 type Client struct {
-	AppID       string
-	AppSecret   string
+	appID       string
+	appSecret   string
 	accessToken string
 	jsAPITicket string
 	ticker      *time.Ticker
@@ -85,8 +91,8 @@ func (c *Client) startTicker() {
 // NewClient 创建客户端
 func NewClient(appID, appSecret string) Clienter {
 	client := &Client{
-		AppID:     appID,
-		AppSecret: appSecret,
+		appID:     appID,
+		appSecret: appSecret,
 		ticker:    time.NewTicker(time.Hour), // 1小时执行一次
 		rwMutex:   &sync.RWMutex{},
 	}
@@ -113,8 +119,8 @@ func (c *Client) GetAccessToken() string {
 // https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140183
 func (c *Client) refreshAccessToken() {
 	result, err := Get("https://api.weixin.qq.com/cgi-bin/token", map[string]string{
-		"appid":      c.AppID,
-		"secret":     c.AppSecret,
+		"appid":      c.AppID(),
+		"secret":     c.AppSecret(),
 		"grant_type": "client_credential",
 	})
 	if err != nil {
@@ -159,4 +165,14 @@ func (c *Client) refreshJsAPITicket() {
 	c.rwMutex.Lock()
 	defer c.rwMutex.Unlock()
 	c.jsAPITicket = reply.Ticket
+}
+
+// AppID ...
+func (c *Client) AppID() string {
+	return c.appID
+}
+
+// AppSecret ...
+func (c *Client) AppSecret() string {
+	return c.appSecret
 }
