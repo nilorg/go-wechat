@@ -19,7 +19,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.4.0
-	github.com/ugorji/go v1.1.7 // indirect
+	github.com/ugorji/go/codec v1.1.7 // indirect
 	golang.org/x/net v0.0.0-20190724013045-ca1201d0de80 // indirect
 	golang.org/x/sys v0.0.0-20190922100055-0a153f010e69 // indirect
 	golang.org/x/text v0.3.2 // indirect
