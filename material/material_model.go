@@ -33,3 +33,8 @@ type UploadTempFileReply struct {
 	MediaID   string `json:"media_id"`   //	媒体文件上传后，获取标识
 	CreatedAt int64  `json:"created_at"` // 媒体文件上传时间戳
 }
+
+// GetTempFileReply 获取临时文件回复
+type GetTempFileReply struct {
+	VideoURL string `json:"video_url"` // 如果返回的是视频消息素材
+}

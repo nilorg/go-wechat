@@ -3,6 +3,7 @@ package material
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 
 	wechat "github.com/nilorg/go-wechat"
@@ -78,4 +79,18 @@ func (m *Material) UploadTempFile(filename, fileType string, srcFile io.Reader) 
 	reply := new(UploadTempFileReply)
 	json.Unmarshal(result, reply)
 	return reply, nil
+}
+
+// GetTempFile 获取临时素材
+func (m *Material) GetTempFile(mediaID string, dis io.Writer) (*GetTempFileReply, error) {
+	result, err := wechat.Download(fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s", m.client.GetAccessToken(), mediaID), dis)
+	if err != nil {
+		return nil, err
+	}
+	if result != nil {
+		reply := new(GetTempFileReply)
+		json.Unmarshal(result, reply)
+		return reply, nil
+	}
+	return nil, nil
 }
