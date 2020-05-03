@@ -124,8 +124,9 @@ func (c *Client) refreshAccessToken() {
 		"grant_type": "client_credential",
 	})
 	if err != nil {
-		log.Printf("刷新AccessToken错误：%v", err)
-		c.accessToken = ""
+		log.Printf("刷新AccessToken错误：%v\n", err)
+		// c.accessToken = ""
+		return
 	}
 	reply := new(accessTokenReply)
 	json.Unmarshal(result, reply)
