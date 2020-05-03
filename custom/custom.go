@@ -31,3 +31,9 @@ func (c *Custom) SendText(req *TextRequest) error {
 func (c *Custom) SendImage(req *ImageRequest) error {
 	return c.send(req)
 }
+
+// SendNews 发送图文消息（点击跳转到外链）
+// 图文消息条数限制在1条以内，注意，如果图文数超过1，则将会返回错误码45008。
+func (c *Custom) SendNews(req *NewsRequest) error {
+	return c.send(req)
+}

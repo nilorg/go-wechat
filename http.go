@@ -76,6 +76,30 @@ func Upload(uri, filename string, description *VideoDescription, srcFile io.Read
 	return
 }
 
+// Download 下载非视频文件
+func Download(uri string, dis io.Writer) (result []byte, err error) {
+	var resp *http.Response
+	resp, err = http.Get(uri)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	ctype := resp.Header.Get("Content-Type")
+	if strings.Index(strings.ToLower(ctype), "application/json") != -1 {
+		result, err = ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return
+		}
+		err = NewError(result)
+		if err != nil {
+			result = nil
+		}
+	} else {
+		io.Copy(dis, resp.Body)
+	}
+	return
+}
+
 // PostJSON send post request.
 func PostJSON(url string, jsonObject interface{}) (result []byte, err error) {
 	buf := new(bytes.Buffer)
