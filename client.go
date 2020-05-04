@@ -82,6 +82,7 @@ type Client struct {
 func (c *Client) startTicker() {
 	go func() { // 异步
 		for range c.ticker.C {
+			log.Println("刷新AccessToken和JsAPITicket")
 			c.refreshAccessToken() // 刷新AccessToken
 			c.refreshJsAPITicket()
 		}
@@ -130,10 +131,9 @@ func (c *Client) refreshAccessToken() {
 	}
 	reply := new(accessTokenReply)
 	json.Unmarshal(result, reply)
-
 	c.rwMutex.Lock()
-	defer c.rwMutex.Unlock()
 	c.accessToken = reply.AccessToken
+	c.rwMutex.Unlock()
 }
 
 // jsapiTicketReply ...
@@ -158,20 +158,23 @@ func (c *Client) refreshJsAPITicket() {
 	})
 	if err != nil {
 		log.Printf("刷新Ticket错误：%v", err)
-		c.jsAPITicket = ""
+		// c.jsAPITicket = ""
+		return
 	}
 	reply := new(jsapiTicketReply)
 	json.Unmarshal(result, reply)
 
 	c.rwMutex.Lock()
-	defer c.rwMutex.Unlock()
 	c.jsAPITicket = reply.Ticket
+	c.rwMutex.Unlock()
 }
 
+// AppID ...
 func (c *Client) AppID() string {
 	return c.appID
 }
 
+// AppSecret ...
 func (c *Client) AppSecret() string {
 	return c.appSecret
 }
