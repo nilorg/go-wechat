@@ -36,6 +36,66 @@ client.GetAccessToken()
 client.GetJsAPITicket()
 ```
 
+## 使用全局唯一AccessToken
+
+Fix [获取 access_token 时 AppSecret 错误，或者 access_token 无效。](https://github.com/nilorg/go-wechat/issues/23)
+
+### 客户端
+```go
+package main
+
+import (
+	"log"
+
+	"github.com/go-redis/redis/v7"
+	"github.com/nilorg/go-wechat"
+	"github.com/nilorg/sdk/signal"
+)
+
+var (
+	// Redis 缓存
+	Redis *redis.Client
+	// client 微信客户端
+	client wechat.Clienter
+)
+
+func init() {
+	initRedis()
+}
+
+func initRedis() {
+	// 初始化Redis
+	client := redis.NewClient(&redis.Options{
+		Addr:     "127.0.0.1:3679",
+		Password: "xxxxx",
+		DB:       1,
+	})
+	_, err := client.Ping().Result()
+	if err != nil {
+		log.Fatalf("Init redis connection failed: %s \n", err)
+		return
+	}
+	Redis = client
+}
+
+func main() {
+	client = wechat.NewClientFromRedis()
+	// 使用自定义Redis
+	// client = wechat.NewClientFromRedis(wechat.ClientFromRedisOptionRedisClient(Redis))
+	// 使用自定义RedisKey
+	// client = wechat.NewClientFromRedis(
+	// 	wechat.ClientFromRedisOptionRedisClient(Redis),
+	// 	wechat.ClientFromRedisOptionAccessTokenKey("test_access_token"),
+	// 	wechat.ClientFromRedisOptionJsAPITicketKey("test_js_api_ticket"),
+	// )
+	// 获取内容
+	log.Printf("AccessToken:%s\n", client.GetAccessToken())
+	log.Printf("JsAPITicket:%s\n", client.GetJsAPITicket())
+
+	signal.AwaitExit()
+}
+```
+
 # 例子
 ## 上传文件
 ```go

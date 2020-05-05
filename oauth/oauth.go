@@ -9,15 +9,13 @@ import (
 
 // OAuth 权限
 type OAuth struct {
-	client wechat.Clienter
 	config wechat.Configer
 }
 
 // NewOAuth ...
-func NewOAuth(c *wechat.Client) *OAuth {
+func NewOAuth(conf wechat.Configer) *OAuth {
 	return &OAuth{
-		client: c,
-		config: c,
+		config: conf,
 	}
 }
 
