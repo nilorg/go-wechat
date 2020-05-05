@@ -40,6 +40,10 @@ client.GetJsAPITicket()
 
 Fix [获取 access_token 时 AppSecret 错误，或者 access_token 无效。](https://github.com/nilorg/go-wechat/issues/23)
 
+### 服务器端
+
+使用[wechat-auto-refresh-server](https://github.com/nilorg/go-wechat/tree/master/auto-refresh-server)作为自动刷新服务器
+
 ### 客户端
 ```go
 package main
