@@ -1,14 +1,3 @@
-kind: Service
-apiVersion: v1
-metadata:
-  name: wechat-auto-refresh-server
-  namespace: nilorg
-  labels:
-    app: wechat-auto-refresh-server
-spec:
-  selector:
-    app: wechat-auto-refresh-server
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
