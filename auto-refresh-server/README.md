@@ -20,3 +20,5 @@ export REDIS_JS_API_TICKET_KEY=""
 
 go run main.go
 ```
+
+# Docker使用
