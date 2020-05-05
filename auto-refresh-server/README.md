@@ -32,3 +32,10 @@ docker run --name wechat-auto-refresh-server \
 -e WECHAT_APP_SECRET=oooo \
 -d nilorg/wechat-auto-refresh-server:latest
 ```
+
+# k8s使用例子
+
+```bash
+kubectl create ns nilorg
+kubectl apply -f deployment.yaml
+```
