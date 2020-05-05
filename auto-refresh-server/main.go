@@ -112,7 +112,7 @@ func refreshAccessToken() string {
 	reply := new(wechat.AccessTokenReply)
 	json.Unmarshal(result, reply)
 
-	if err := redisClient.Set(redisAccessTokenKey, reply.AccessToken, 0).Err(); err != nil {
+	if err := redisClient.Set(redisAccessTokenKey, reply.AccessToken, time.Second*time.Duration(reply.ExpiresIn)).Err(); err != nil {
 		logger.Errorf("redisClient.Set %s Value: %s Error: %s", redisAccessTokenKey, reply.AccessToken, err)
 	}
 	logger.Debugf("最新AccessToken: %s", reply.AccessToken)
@@ -133,7 +133,7 @@ func refreshJsAPITicket(token string) {
 	reply := new(wechat.JsAPITicketReply)
 	json.Unmarshal(result, reply)
 	logger.Debugf("最新JsAPITicket: %s", reply.Ticket)
-	if err := redisClient.Set(redisJsAPITicketKey, reply.Ticket, 0).Err(); err != nil {
+	if err := redisClient.Set(redisJsAPITicketKey, reply.Ticket, time.Second*time.Duration(reply.ExpiresIn)).Err(); err != nil {
 		logger.Errorf("redisClient.Set %s Value: %s Error: %s", redisJsAPITicketKey, reply.Ticket, err)
 	}
 }
