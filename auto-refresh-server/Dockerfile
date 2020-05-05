@@ -8,7 +8,7 @@ RUN go build -o ./bin/app -i ./auto-refresh-server/main.go
 FROM nilorg/alpine:latest
 WORKDIR /workspace
 
-ENV REDIS_ADDR=127.0.0.1
+ENV REDIS_ADDR=127.0.0.1:6379
 ENV REDIS_PASSWORD=
 ENV REDIS_DB=0
 ENV WECHAT_APP_ID=

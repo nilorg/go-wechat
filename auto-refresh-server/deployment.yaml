@@ -1,0 +1,40 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: wechat-auto-refresh-server
+  namespace: nilorg
+  labels:
+    app: wechat-auto-refresh-server
+spec:
+  selector:
+    app: wechat-auto-refresh-server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wechat-auto-refresh-server
+  namespace: nilorg
+spec:
+  selector:
+    matchLabels:
+      app: wechat-auto-refresh-server
+      version: v1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: wechat-auto-refresh-server
+        version: v1
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: wechat-auto-refresh-server
+          image: nilorg/wechat-auto-refresh-server:latest
+          imagePullPolicy: Always
+          env:
+            - name: REDIS_ADDR
+              value: redis:6379
+            - name: WECHAT_APP_ID
+              value: 
+            - name: WECHAT_APP_SECRET
+              value: 
