@@ -103,8 +103,8 @@ func NewClient(appID, appSecret string) *Client {
 	return client
 }
 
-// accessTokenReply ...
-type accessTokenReply struct {
+// AccessTokenReply ...
+type AccessTokenReply struct {
 	AccessToken string `json:"access_token"`
 	ExpiresIn   int    `json:"expires_in"`
 }
@@ -129,15 +129,15 @@ func (c *Client) refreshAccessToken() {
 		// c.accessToken = ""
 		return
 	}
-	reply := new(accessTokenReply)
+	reply := new(AccessTokenReply)
 	json.Unmarshal(result, reply)
 	c.rwMutex.Lock()
 	c.accessToken = reply.AccessToken
 	c.rwMutex.Unlock()
 }
 
-// jsapiTicketReply ...
-type jsapiTicketReply struct {
+// JsAPITicketReply ...
+type JsAPITicketReply struct {
 	Ticket    string `json:"ticket"`
 	ExpiresIn int    `json:"expires_in"`
 }
@@ -161,7 +161,7 @@ func (c *Client) refreshJsAPITicket() {
 		// c.jsAPITicket = ""
 		return
 	}
-	reply := new(jsapiTicketReply)
+	reply := new(JsAPITicketReply)
 	json.Unmarshal(result, reply)
 
 	c.rwMutex.Lock()
