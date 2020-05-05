@@ -2,7 +2,7 @@
 
 ```bash
 # redis 连接地址
-export REDIS_ADDR="127.0.0.1"
+export REDIS_ADDR="127.0.0.1:6379"
 # redis 密码
 export REDIS_PASSWORD=""
 # redis 数据库
@@ -22,3 +22,13 @@ go run main.go
 ```
 
 # Docker使用
+
+[wechat-auto-refresh-server](https://hub.docker.com/r/nilorg/wechat-auto-refresh-server)
+
+```bash
+docker run --name wechat-auto-refresh-server \
+-e REDIS_ADDR="127.0.0.1:6379" \
+-e WECHAT_APP_ID=xxxx \
+-e WECHAT_APP_SECRET=oooo \
+-d nilorg/wechat-auto-refresh-server:latest
+```
