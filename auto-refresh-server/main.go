@@ -58,7 +58,7 @@ func main() {
 		appSecret = v
 	}
 	if v := os.Getenv(envRefreshDurationKey); v != "" {
-		refreshDuration = time.Duration(convert.ToInt64(v))
+		refreshDuration = time.Duration(convert.ToInt64(v)) * time.Second
 	}
 	initRedis()
 	logger.Debugln("初始化AccessToken和JsAPITicket")
