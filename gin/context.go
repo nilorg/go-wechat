@@ -5,11 +5,6 @@ import (
 	wechat "github.com/nilorg/go-wechat"
 )
 
-var (
-	// Client 微信上下文
-	Client wechat.Clienter
-)
-
 // WechatContext include gin context and local context
 type WechatContext struct {
 	*ggin.Context
@@ -17,12 +12,12 @@ type WechatContext struct {
 }
 
 // WechatContextFunction wechat gin.Contenxt and local model.Context
-func WechatContextFunction(ctlFunc func(ctx *WechatContext)) ggin.HandlerFunc {
+func WechatContextFunction(ctlFunc func(ctx *WechatContext), client wechat.Clienter) ggin.HandlerFunc {
 	return func(ctx *ggin.Context) {
 
 		wechatContext := &WechatContext{
 			Context:  ctx,
-			WxClient: Client,
+			WxClient: client,
 		}
 
 		ctlFunc(wechatContext)
