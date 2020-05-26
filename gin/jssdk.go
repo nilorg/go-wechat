@@ -2,6 +2,7 @@ package gin
 
 import (
 	"crypto/sha1"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"time"
@@ -19,10 +20,15 @@ func NewHandleJssdkConfig(appID string, client wechat.Clienter) gin.HandlerFunc 
 			ctx.JSON(400, "url不能为空")
 			return
 		}
+		uriDecode, err := base64.StdEncoding.DecodeString(uri)
+		if err != nil {
+			ctx.JSON(400, "base64 decode error")
+			return
+		}
 		timestamp := time.Now().Unix()
 		noncestr := random.AZaz09(16)
 		uriLayout := "jsapi_ticket=%s&noncestr=%s&timestamp=%d&url=%s"
-		signatureParams := fmt.Sprintf(uriLayout, client.GetJsAPITicket(), noncestr, timestamp, uri)
+		signatureParams := fmt.Sprintf(uriLayout, client.GetJsAPITicket(), noncestr, timestamp, string(uriDecode))
 		h := sha1.New()
 		io.WriteString(h, signatureParams)
 		ctx.JSON(200, map[string]interface{}{
