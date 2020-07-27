@@ -82,3 +82,21 @@ func (o *OAuth) CheckAccessToken(accessToken, openID string) (bool, error) {
 	}
 	return false, nil
 }
+
+// Code2Session 小程序登录凭证校验
+// 通过 wx.login 接口获得临时登录凭证 code 后传到开发者服务器调用此接口完成登录流程。
+// https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/login/auth.code2Session.html
+func (o *OAuth) Code2Session(code string) (*Code2SessionReponse, error) {
+	result, err := wechat.Get("https://api.weixin.qq.com/sns/jscode2session", map[string]string{
+		"appid":      o.config.AppID(),
+		"secret":     o.config.AppSecret(),
+		"js_code":    code,
+		"grant_type": "authorization_code",
+	})
+	if err != nil {
+		return nil, err
+	}
+	resp := new(Code2SessionReponse)
+	json.Unmarshal(result, resp)
+	return resp, nil
+}

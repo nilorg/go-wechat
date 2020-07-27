@@ -30,3 +30,10 @@ type UserInfoReply struct {
 	Privilege  []string `json:"privilege"`  // 用户特权信息，json 数组，如微信沃卡用户为（chinaunicom）
 	UnionID    string   `json:"unionid"`    // 只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
 }
+
+// Code2SessionReponse 小程序验证token响应
+type Code2SessionReponse struct {
+	OpenID     string `json:"openid"`      // 用户的唯一标识
+	Sessionkey string `json:"session_key"` // 会话密钥
+	UnionID    string `json:"unionid"`     // 只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
+}
