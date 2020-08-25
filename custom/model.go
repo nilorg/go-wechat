@@ -77,3 +77,32 @@ func NewNewsRequest(toUser string, article *NewsDataArticle) *NewsRequest {
 		},
 	}
 }
+
+// MenuRequest 菜单请求
+type MenuRequest struct {
+	ToUser  string       `json:"touser"`  // 要发送给的用户openID
+	MsgType string       `json:"msgtype"` // 消息类型
+	Menus   *MenuMessage `json:"msgmenu"` // 菜单
+}
+
+// MenuMessage 菜单消息
+type MenuMessage struct {
+	HeadContent string                 `json:"head_content"` // 菜单名称
+	List        []*MenuMessageListItem `json:"list"`         // 菜单项
+	TailContent string                 `json:"tail_content"` // 结语
+}
+
+// MenuMessageListItem 菜单项
+type MenuMessageListItem struct {
+	ID      string `json:"id"`      // ID
+	Content string `json:"content"` // 内容
+}
+
+// NewMenuRequest 发送菜单消息
+func NewMenuRequest(toUser string, msg *MenuMessage) *MenuRequest {
+	return &MenuRequest{
+		ToUser:  toUser,
+		MsgType: "msgmenu",
+		Menus:   msg,
+	}
+}

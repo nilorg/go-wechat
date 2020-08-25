@@ -37,3 +37,8 @@ func (c *Custom) SendImage(req *ImageRequest) error {
 func (c *Custom) SendNews(req *NewsRequest) error {
 	return c.send(req)
 }
+
+// SendMenu 发送菜单消息
+func (c *Custom) SendMenu(req *MenuRequest) error {
+	return c.send(req)
+}
