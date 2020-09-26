@@ -51,7 +51,7 @@ package main
 import (
 	"log"
 
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 	"github.com/nilorg/go-wechat"
 	"github.com/nilorg/sdk/signal"
 )
@@ -74,7 +74,7 @@ func initRedis() {
 		Password: "xxxxx",
 		DB:       1,
 	})
-	_, err := client.Ping().Result()
+	_, err := client.Ping(context.Background()).Result()
 	if err != nil {
 		log.Fatalf("Init redis connection failed: %s \n", err)
 		return

@@ -1,7 +1,7 @@
 package wechat
 
 import (
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 )
 
 // ClientFromRedisOptions 可选参数列表
@@ -16,9 +16,9 @@ type ClientFromRedisOption func(*ClientFromRedisOptions)
 
 const (
 	// RedisAccessTokenKey ...
-	RedisAccessTokenKey = "github.com/nilorg/go-wechat/access_token"
+	RedisAccessTokenKey = "nilorg:go-wechat:access_token"
 	// RedisJsAPITicketKey ...
-	RedisJsAPITicketKey = "github.com/nilorg/go-wechat/js_api_ticket"
+	RedisJsAPITicketKey = "nilorg:go-wechat:js_api_ticket"
 )
 
 // NewClientFromRedisOptions 创建可选参数

@@ -1,9 +1,10 @@
 package wechat
 
 import (
+	"context"
 	"log"
 
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 )
 
 // ClientFromRedis Redis客户端
@@ -31,7 +32,7 @@ func (client *ClientFromRedis) GetJsAPITicket() string {
 
 // getRedisValue 根据Key获取Redis中的字符串
 func (client *ClientFromRedis) getRedisValue(key string) string {
-	bytes, err := client.opts.RedisClient.Get(key).Bytes()
+	bytes, err := client.opts.RedisClient.Get(context.Background(), key).Bytes()
 	if err == redis.Nil {
 		return ""
 	} else if err != nil {

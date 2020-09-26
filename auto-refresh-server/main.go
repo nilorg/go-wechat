@@ -1,11 +1,12 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"os"
 	"time"
 
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 	"github.com/nilorg/go-wechat"
 	"github.com/nilorg/pkg/logger"
 	"github.com/nilorg/sdk/convert"
@@ -80,7 +81,7 @@ func initRedis() {
 		Password: redisPassword,
 		DB:       redisDb,
 	})
-	_, err := client.Ping().Result()
+	_, err := client.Ping(context.Background()).Result()
 	if err != nil {
 		logger.Fatalf(
 			"Init redis connection failed: %s ",
@@ -112,7 +113,7 @@ func refreshAccessToken() string {
 	reply := new(wechat.AccessTokenReply)
 	json.Unmarshal(result, reply)
 
-	if err := redisClient.Set(redisAccessTokenKey, reply.AccessToken, time.Second*time.Duration(reply.ExpiresIn)).Err(); err != nil {
+	if err := redisClient.Set(context.Background(), redisAccessTokenKey, reply.AccessToken, time.Second*time.Duration(reply.ExpiresIn)).Err(); err != nil {
 		logger.Errorf("redisClient.Set %s Value: %s Error: %s", redisAccessTokenKey, reply.AccessToken, err)
 	}
 	logger.Debugf("最新AccessToken: %s", reply.AccessToken)
@@ -133,7 +134,7 @@ func refreshJsAPITicket(token string) {
 	reply := new(wechat.JsAPITicketReply)
 	json.Unmarshal(result, reply)
 	logger.Debugf("最新JsAPITicket: %s", reply.Ticket)
-	if err := redisClient.Set(redisJsAPITicketKey, reply.Ticket, time.Second*time.Duration(reply.ExpiresIn)).Err(); err != nil {
+	if err := redisClient.Set(context.Background(), redisJsAPITicketKey, reply.Ticket, time.Second*time.Duration(reply.ExpiresIn)).Err(); err != nil {
 		logger.Errorf("redisClient.Set %s Value: %s Error: %s", redisJsAPITicketKey, reply.Ticket, err)
 	}
 }
