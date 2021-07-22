@@ -16,9 +16,9 @@ type ClientFromRedisOption func(*ClientFromRedisOptions)
 
 const (
 	// RedisAccessTokenKey ...
-	RedisAccessTokenKey = "nilorg:go-wechat:access_token"
+	RedisAccessTokenKey = "github.com/nilorg/go-wechat/access_token"
 	// RedisJsAPITicketKey ...
-	RedisJsAPITicketKey = "nilorg:go-wechat:js_api_ticket"
+	RedisJsAPITicketKey = "github.com/nilorg/go-wechat/js_api_ticket"
 )
 
 // NewClientFromRedisOptions 创建可选参数
