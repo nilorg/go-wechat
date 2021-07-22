@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/nilorg/go-wechat"
+	client "github.com/nilorg/go-wechat/v2/client"
 	"github.com/nilorg/pkg/logger"
 	"github.com/nilorg/sdk/convert"
 	"github.com/nilorg/sdk/signal"
@@ -32,8 +32,8 @@ var (
 	appID               string
 	appSecret           string
 	refreshDuration     time.Duration = time.Hour
-	redisAccessTokenKey               = wechat.RedisAccessTokenKey
-	redisJsAPITicketKey               = wechat.RedisJsAPITicketKey
+	redisAccessTokenKey               = client.RedisAccessTokenKey
+	redisJsAPITicketKey               = client.RedisJsAPITicketKey
 	redisClient         *redis.Client
 )
 
@@ -101,7 +101,7 @@ func refresh() {
 // refreshAccessToken ...
 // https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140183
 func refreshAccessToken() string {
-	result, err := wechat.Get("https://api.weixin.qq.com/cgi-bin/token", map[string]string{
+	result, err := client.Get("https://api.weixin.qq.com/cgi-bin/token", map[string]string{
 		"appid":      appID,
 		"secret":     appSecret,
 		"grant_type": "client_credential",
@@ -110,7 +110,7 @@ func refreshAccessToken() string {
 		logger.Debugf("刷新AccessToken错误：%v", err)
 		return ""
 	}
-	reply := new(wechat.AccessTokenReply)
+	reply := new(client.AccessTokenReply)
 	json.Unmarshal(result, reply)
 
 	if err := redisClient.Set(context.Background(), redisAccessTokenKey, reply.AccessToken, time.Second*time.Duration(reply.ExpiresIn)).Err(); err != nil {
@@ -123,7 +123,7 @@ func refreshAccessToken() string {
 // refreshJsAPITicket ...
 // https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115
 func refreshJsAPITicket(token string) {
-	result, err := wechat.Get("https://api.weixin.qq.com/cgi-bin/ticket/getticket", map[string]string{
+	result, err := client.Get("https://api.weixin.qq.com/cgi-bin/ticket/getticket", map[string]string{
 		"access_token": token,
 		"type":         "jsapi",
 	})
@@ -131,7 +131,7 @@ func refreshJsAPITicket(token string) {
 		logger.Debugf("刷新Ticket错误：%v", err)
 		return
 	}
-	reply := new(wechat.JsAPITicketReply)
+	reply := new(client.JsAPITicketReply)
 	json.Unmarshal(result, reply)
 	logger.Debugf("最新JsAPITicket: %s", reply.Ticket)
 	if err := redisClient.Set(context.Background(), redisJsAPITicketKey, reply.Ticket, time.Second*time.Duration(reply.ExpiresIn)).Err(); err != nil {
