@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	client "github.com/nilorg/go-wechat/v2/client"
+	"github.com/nilorg/go-wechat/v2/client"
 	"github.com/nilorg/pkg/logger"
 	"github.com/nilorg/sdk/convert"
 	"github.com/nilorg/sdk/signal"

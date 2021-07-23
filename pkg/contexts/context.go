@@ -3,6 +3,8 @@ package contexts
 import (
 	"context"
 	"errors"
+
+	"github.com/nilorg/go-wechat/v2/client"
 )
 
 var (
@@ -13,8 +15,8 @@ var (
 type wechatKey struct{}
 
 // FromContext 从上下文中获取微信客户端
-func FromContext(ctx context.Context) (Clienter, error) {
-	c, ok := ctx.Value(wechatKey{}).(Clienter)
+func FromContext(ctx context.Context) (client.Clienter, error) {
+	c, ok := ctx.Value(wechatKey{}).(client.Clienter)
 	if !ok {
 		return nil, ErrContextNotFoundClient
 	}
@@ -22,6 +24,6 @@ func FromContext(ctx context.Context) (Clienter, error) {
 }
 
 // NewContext 创建微信客户端上下文
-func NewContext(ctx context.Context, c Clienter) context.Context {
+func NewContext(ctx context.Context, c client.Clienter) context.Context {
 	return context.WithValue(ctx, wechatKey{}, c)
 }

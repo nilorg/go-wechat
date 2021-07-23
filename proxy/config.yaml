@@ -1,0 +1,9 @@
+redis:
+  address: "localhost:6379"
+  password: ""
+  db: 0
+
+apps:
+  - id: xxxx
+    redis_access_token_key: "xx2x"
+    redis_js_api_ticket_key: "sss"

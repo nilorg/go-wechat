@@ -9,22 +9,16 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	crypter "github.com/heroicyang/wechat-crypter"
+	"github.com/nilorg/go-wechat/v2/gateway/middleware"
 	"github.com/nilorg/go-wechat/v2/gateway/models"
 	"github.com/nilorg/sdk/convert"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
-// Header 头处理
-func Header() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("Server", "Wechat-Gateway")
-		c.Next()
-	}
-}
-
 func HTTP() {
 	engine := gin.Default()
+	engine.Use(middleware.Header())
 	engine.GET("/:appid", checkAppID, AcceptGET)
 	engine.POST("/:appid", checkAppID, AcceptPOST)
 	if err := engine.Run(); err != nil {
@@ -79,7 +73,6 @@ func AcceptPOST(ctx *gin.Context) {
 	appID := ctx.Param("appid")
 	value := viper.GetStringMapString(appID)
 	if value == nil {
-		// TODO: 返回错误
 		ctx.Status(400)
 		return
 	}

@@ -77,6 +77,7 @@ type Client struct {
 	appSecret   string
 	accessToken string
 	jsAPITicket string
+	proxy       bool
 	ticker      *time.Ticker
 	rwMutex     *sync.RWMutex // 读写锁
 }
@@ -96,6 +97,7 @@ func (c *Client) startTicker() {
 func NewClient(appID, appSecret string) *Client {
 	client := &Client{
 		baseURL:   "https://api.weixin.qq.com",
+		proxy:     false,
 		appID:     appID,
 		appSecret: appSecret,
 		ticker:    time.NewTicker(time.Hour), // 1小时执行一次
