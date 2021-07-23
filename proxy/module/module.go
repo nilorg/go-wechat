@@ -7,6 +7,6 @@ import (
 
 // Init 初始化 module
 func Init() {
-	store.Init()
 	config.Init()
+	store.Init()
 }

@@ -8,11 +8,13 @@ import (
 
 	"github.com/nilorg/go-wechat/v2/proxy/module"
 	"github.com/nilorg/go-wechat/v2/proxy/server"
+	"github.com/sirupsen/logrus"
 )
 
 func init() {
 	// 初始化线程数量
 	runtime.GOMAXPROCS(runtime.NumCPU())
+	logrus.SetLevel(logrus.DebugLevel)
 	module.Init()
 }
 

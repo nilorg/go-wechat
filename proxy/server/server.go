@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"log"
 	"net"
@@ -17,7 +16,6 @@ import (
 	"github.com/nilorg/go-wechat/v2/proxy/module/config"
 	"github.com/nilorg/go-wechat/v2/proxy/module/store"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 )
 
 var Transport http.RoundTripper = &http.Transport{
@@ -46,20 +44,34 @@ func HTTP(ctx context.Context) {
 func proxy(ctx *gin.Context) {
 	appID := ctx.Param("appid")
 	path := ctx.Param("path")
+	logrus.Debugf("APPID:%s,PATH:%s", appID, path)
+	appConfig := config.GetApp(appID)
+	// 组织要访问的微信接口
+	proxyBaseURL := "https://api.weixin.qq.com"
+	proxyQuery := ctx.Request.URL.Query()
+	switch path {
+	case "/sns/oauth2/access_token", "/sns/jscode2session":
+		proxyQuery.Set("appid", appConfig.ID)
+		proxyQuery.Set("secret", appConfig.Secret)
+	case "/sns/oauth2/refresh_token":
+		proxyQuery.Set("appid", appConfig.ID)
+	case "/cgi-bin/showqrcode":
+		proxyBaseURL = "https://mp.weixin.qq.com"
+		proxyQuery.Set("ticket", getRedisValue(appConfig.RedisJsAPITicketKey))
+	default:
+		proxyQuery.Set("access_token", getRedisValue(appConfig.RedisAccessTokenKey))
+	}
 
-	fmt.Println(appID)
 	var (
 		proxyURL *url.URL
 		err      error
 	)
-	proxyURL, err = url.Parse(fmt.Sprintf("https://api.weixin.qq.com/%s", path))
+	proxyURL, err = url.Parse(proxyBaseURL + path)
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
 		return
 	}
-	rdsAccessTokenKey := viper.GetString(fmt.Sprintf("apps.%s.redis_access_token_key", appID))
-	proxyQuery := proxyURL.Query()
-	proxyQuery.Set("access_token", getRedisValue(rdsAccessTokenKey))
+	logrus.Debugf("请求微信地址：%s?%s", proxyURL, proxyQuery.Encode())
 	proxyURL.RawQuery = proxyQuery.Encode()
 	proxyReq := *ctx.Request // 复制请求信息
 	proxyReq.URL = proxyURL  // 设置代理URL
@@ -74,6 +86,7 @@ func proxy(ctx *gin.Context) {
 	}
 	defer proxyResp.Body.Close()
 	for key, value := range proxyResp.Header { // 设置响应Header
+		logrus.Debugf("Header: %s:%v", key, value)
 		if strings.EqualFold(key, "Content-Length") || strings.EqualFold(key, "Connection") {
 			continue
 		}
@@ -88,8 +101,10 @@ func proxy(ctx *gin.Context) {
 // checkAppID 检查AppID
 func checkAppID(ctx *gin.Context) {
 	appID := ctx.Param("appid")
+	logrus.Debugf("检查AppID:%s是否存在", appID)
 	if !config.ExistAppID(appID) {
-		ctx.Status(400)
+		logrus.Debugf("未检查到AppID:%s", appID)
+		ctx.Status(404)
 		ctx.Abort()
 		return
 	}

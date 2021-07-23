@@ -4,6 +4,7 @@ redis:
   db: 0
 
 apps:
-  - id: xxxx
+  - id: xxx
+    secret: sss
     redis_access_token_key: "xx2x"
     redis_js_api_ticket_key: "sss"
