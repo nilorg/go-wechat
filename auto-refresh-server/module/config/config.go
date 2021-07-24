@@ -17,6 +17,7 @@ type AppConfig struct {
 	Secret              string `mapstructure:"secret"`
 	RedisAccessTokenKey string `mapstructure:"redis_access_token_key"`
 	RedisJsAPITicketKey string `mapstructure:"redis_js_api_ticket_key"`
+	RefreshDuration     int64  `mapstructure:"refresh_duration"`
 }
 
 var (
@@ -26,7 +27,7 @@ var (
 func Init() {
 	viper.SetConfigType("yaml") // or viper.SetConfigType("YAML")
 	configFilename := "./config.yaml"
-	if v := os.Getenv("WECHAT_PROXY_CONFIG"); v != "" {
+	if v := os.Getenv("WECHAT_REFRESH_CONFIG"); v != "" {
 		configFilename = v
 	}
 	viper.SetConfigFile(configFilename)
@@ -62,6 +63,7 @@ func GetApp(appID string) *AppConfig {
 	}
 	return nil
 }
+
 func ExistAppID(appID string) bool {
 	apps := GetApps()
 	for _, v := range apps {

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/sirupsen/logrus"
+	"github.com/nilorg/go-wechat/v2/proxy/module/logger"
 
 	"github.com/spf13/viper"
 )
@@ -29,5 +29,5 @@ func initRedis() {
 	if err != nil {
 		panic(err)
 	}
-	logrus.Println(pong)
+	logger.Standard.Info(pong)
 }

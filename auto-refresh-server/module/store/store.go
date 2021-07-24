@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/nilorg/go-wechat/v2/gateway/module/logger"
+	"github.com/nilorg/go-wechat/v2/auto-refresh-server/module/logger"
 
 	"github.com/spf13/viper"
 )

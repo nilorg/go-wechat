@@ -1,0 +1,11 @@
+redis:
+  address: "localhost:6379"
+  password: ""
+  db: 0
+
+apps:
+  - id: xxxx
+    secret: "ssss"
+    refresh_duration: 3600
+    redis_access_token_key: "nilorg:wechat:xxxx:token"
+    redis_js_api_ticket_key: "nilorg:wechat:xxxx:ticket"

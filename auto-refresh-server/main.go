@@ -3,138 +3,95 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/nilorg/go-wechat/v2/auto-refresh-server/module"
+	"github.com/nilorg/go-wechat/v2/auto-refresh-server/module/config"
+	"github.com/nilorg/go-wechat/v2/auto-refresh-server/module/logger"
+	"github.com/nilorg/go-wechat/v2/auto-refresh-server/module/store"
 	"github.com/nilorg/go-wechat/v2/client"
-	"github.com/nilorg/pkg/logger"
-	"github.com/nilorg/sdk/convert"
-	"github.com/nilorg/sdk/signal"
-	"github.com/pkg/errors"
-)
-
-const (
-	envRedisAddrKey        = "REDIS_ADDR"
-	envRedisPasswordKey    = "REDIS_PASSWORD"
-	envRedisDbKey          = "REDIS_DB"
-	envAppIDKey            = "WECHAT_APP_ID"
-	envAppSecretKey        = "WECHAT_APP_SECRET"
-	envRefreshDurationKey  = "WECHAT_REFRESH_DURATION"
-	envRedisAccessTokenKey = "REDIS_ACCESS_TOKEN_KEY"
-	envRedisJsAPITicketKey = "REDIS_JS_API_TICKET_KEY"
-)
-
-var (
-	redisAddr           string = "127.0.0.1:6379"
-	redisPassword       string = ""
-	redisDb             int    = 0
-	appID               string
-	appSecret           string
-	refreshDuration     time.Duration = time.Hour
-	redisAccessTokenKey               = client.RedisAccessTokenKey
-	redisJsAPITicketKey               = client.RedisJsAPITicketKey
-	redisClient         *redis.Client
 )
 
 func init() {
-	logger.Init()
+	module.Init()
 }
 
 func main() {
+	defer module.Close()
+	// 监控系统信号和创建 Context 现在一步搞定
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	// 在收到信号的时候，会自动触发 ctx 的 Done ，这个 stop 是不再捕获注册的信号的意思，算是一种释放资源。
+	defer stop()
 
-	if v := os.Getenv(envRedisAddrKey); v != "" {
-		redisAddr = v
-	}
-	if v := os.Getenv(envRedisPasswordKey); v != "" {
-		redisPassword = v
-	}
-	if v := os.Getenv(envRedisDbKey); v != "" {
-		redisDb = convert.ToInt(v)
-	}
-	if v := os.Getenv(envAppIDKey); v != "" {
-		appID = v
-	}
-	if v := os.Getenv(envAppSecretKey); v != "" {
-		appSecret = v
-	}
-	if v := os.Getenv(envRefreshDurationKey); v != "" {
-		refreshDuration = time.Duration(convert.ToInt64(v)) * time.Second
-	}
-	initRedis()
-	logger.Debugln("初始化AccessToken和JsAPITicket")
-	refresh()
-	ticker := time.NewTicker(refreshDuration)
-	go func() { // 异步
-		for range ticker.C {
-			logger.Debugln("刷新AccessToken和JsAPITicket")
-			refresh()
+	apps := config.GetApps()
+	tickers := make([]*time.Ticker, len(apps))
+	defer func() {
+		for _, t := range tickers {
+			t.Stop()
 		}
 	}()
-	signal.AwaitExit()
-}
-
-func initRedis() {
-	// 初始化Redis
-	client := redis.NewClient(&redis.Options{
-		Addr:     redisAddr,
-		Password: redisPassword,
-		DB:       redisDb,
-	})
-	_, err := client.Ping(context.Background()).Result()
-	if err != nil {
-		logger.Fatalf(
-			"Init redis connection failed: %s ",
-			errors.Wrap(err, "Ping redis failed"),
-		)
+	for i, app := range apps {
+		logger.Sugared.Debugf("初始化App:[%s]的AccessToken和JsAPITicket", app.ID)
+		refresh(app.ID, app.Secret, app.RedisAccessTokenKey, app.RedisJsAPITicketKey)
+		time.Sleep(time.Second)
+		ticker := time.NewTicker(time.Duration(app.RefreshDuration) * time.Second)
+		go func() { // 异步
+			for range ticker.C {
+				logger.Sugared.Debug("App:[%s]刷新AccessToken和JsAPITicket", app.ID)
+				refresh(app.ID, app.Secret, app.RedisAccessTokenKey, app.RedisJsAPITicketKey)
+			}
+		}()
+		tickers[i] = ticker
 	}
-	redisClient = client
+	<-ctx.Done()
 }
 
-func refresh() {
-	token := refreshAccessToken() // 刷新AccessToken
+func refresh(appID string, appSecret string, redisAccessTokenKey, redisJsAPITicketKey string) {
+	token := refreshAccessToken(appID, appSecret, redisAccessTokenKey) // 刷新AccessToken
 	if token != "" {
-		refreshJsAPITicket(token) // 刷新JsAPITicket
+		refreshJsAPITicket(appID, token, redisJsAPITicketKey) // 刷新JsAPITicket
 	}
 }
 
 // refreshAccessToken ...
 // https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140183
-func refreshAccessToken() string {
+func refreshAccessToken(appID, appSecret, redisAccessTokenKey string) string {
 	result, err := client.Get("https://api.weixin.qq.com/cgi-bin/token", map[string]string{
 		"appid":      appID,
 		"secret":     appSecret,
 		"grant_type": "client_credential",
 	})
 	if err != nil {
-		logger.Debugf("刷新AccessToken错误：%v", err)
+		logger.Sugared.Debugf("App:[%s]刷新AccessToken错误：%v", appID, err)
 		return ""
 	}
 	reply := new(client.AccessTokenReply)
 	json.Unmarshal(result, reply)
 
-	if err := redisClient.Set(context.Background(), redisAccessTokenKey, reply.AccessToken, time.Second*time.Duration(reply.ExpiresIn)).Err(); err != nil {
-		logger.Errorf("redisClient.Set %s Value: %s Error: %s", redisAccessTokenKey, reply.AccessToken, err)
+	if err := store.RedisClient.Set(context.Background(), redisAccessTokenKey, reply.AccessToken, time.Second*time.Duration(reply.ExpiresIn)).Err(); err != nil {
+		logger.Sugared.Error("App:[%s]redisClient.Set %s Value: %s Error: %s", appID, redisAccessTokenKey, reply.AccessToken, err)
 	}
-	logger.Debugf("最新AccessToken: %s", reply.AccessToken)
+	logger.Sugared.Debugf("App:[%s]最新AccessToken: %s", appID, reply.AccessToken)
 	return reply.AccessToken
 }
 
 // refreshJsAPITicket ...
 // https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115
-func refreshJsAPITicket(token string) {
+func refreshJsAPITicket(appID, token, redisJsAPITicketKey string) {
 	result, err := client.Get("https://api.weixin.qq.com/cgi-bin/ticket/getticket", map[string]string{
 		"access_token": token,
 		"type":         "jsapi",
 	})
 	if err != nil {
-		logger.Debugf("刷新Ticket错误：%v", err)
+		logger.Sugared.Debugf("App:[%s]刷新Ticket错误：%v", appID, err)
 		return
 	}
 	reply := new(client.JsAPITicketReply)
 	json.Unmarshal(result, reply)
-	logger.Debugf("最新JsAPITicket: %s", reply.Ticket)
-	if err := redisClient.Set(context.Background(), redisJsAPITicketKey, reply.Ticket, time.Second*time.Duration(reply.ExpiresIn)).Err(); err != nil {
-		logger.Errorf("redisClient.Set %s Value: %s Error: %s", redisJsAPITicketKey, reply.Ticket, err)
+	logger.Sugared.Debugf("App:[%s]最新JsAPITicket: %s", appID, reply.Ticket)
+	if err := store.RedisClient.Set(context.Background(), redisJsAPITicketKey, reply.Ticket, time.Second*time.Duration(reply.ExpiresIn)).Err(); err != nil {
+		logger.Sugared.Errorf("App:[%s]redisClient.Set %s Value: %s Error: %s", appID, redisJsAPITicketKey, reply.Ticket, err)
 	}
 }

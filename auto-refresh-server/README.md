@@ -1,24 +1,18 @@
 # 默认使用
 
-```bash
-# redis 连接地址
-export REDIS_ADDR="127.0.0.1:6379"
-# redis 密码
-export REDIS_PASSWORD=""
-# redis 数据库
-export REDIS_DB="0"
-# 微信 app id
-export WECHAT_APP_ID=""
-# 微信 app secret
-export WECHAT_APP_SECRET=""
-# 微信 刷新 时间(单位：秒)
-export WECHAT_REFRESH_DURATION="3600"
-# redis 中存储 access_token key
-export REDIS_ACCESS_TOKEN_KEY=""
-# redis 中存储 js_api_ticket key
-export REDIS_JS_API_TICKET_KEY=""
+# 修改配置文件
+```yaml
+redis:
+  address: "localhost:6379"
+  password: ""
+  db: 0
 
-go run main.go
+apps:
+  - id: xxxx # app_id
+    secret: "ssss" # app_secret
+    refresh_duration: 3600 #（单位秒） 每次间隔刷新时间
+    redis_access_token_key: "nilorg:wechat:xxxx:token" #在redis存储access_token的Key
+    redis_js_api_ticket_key: "nilorg:wechat:xxxx:ticket" # 在redis存储js_api_ticketKey
 ```
 
 # Docker使用
@@ -27,9 +21,7 @@ go run main.go
 
 ```bash
 docker run --name wechat-auto-refresh-server \
--e REDIS_ADDR="127.0.0.1:6379" \
--e WECHAT_APP_ID=xxxx \
--e WECHAT_APP_SECRET=oooo \
+-e WECHAT_REFRESH_CONFIG="./config.yaml" \
 -d nilorg/wechat-auto-refresh-server:latest
 ```
 
@@ -37,5 +29,6 @@ docker run --name wechat-auto-refresh-server \
 
 ```bash
 kubectl create ns nilorg
+# 修改deployment.yaml中的配置文件
 kubectl apply -f deployment.yaml
 ```

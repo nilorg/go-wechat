@@ -9,13 +9,17 @@ require (
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-redis/redis/v8 v8.2.2
 	github.com/heroicyang/wechat-crypter v0.0.0-20150326022142-2d3eafa552ae
-	github.com/nilorg/sdk v0.0.0-20200912025101-a4037e6ee224
+	github.com/nilorg/sdk v0.0.0-20210429091026-95b6cdc95c84
 	github.com/pelletier/go-toml v1.7.0 // indirect
-	github.com/sirupsen/logrus v1.2.0
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.7.1
+	go.uber.org/atomic v1.6.0 // indirect
 	go.uber.org/zap v1.10.0
+	golang.org/x/mod v0.3.1-0.20200828183125-ce943fd02449 // indirect
+	golang.org/x/sys v0.0.0-20200615200032-f1bc736245b1 // indirect
+	golang.org/x/tools v0.0.0-20200207183749-b753a1ba74fa // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 )

@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -27,7 +26,7 @@ var (
 
 func Init() {
 	viper.SetConfigType("yaml") // or viper.SetConfigType("YAML")
-	configFilename := "./config.dev.yaml"
+	configFilename := "./config.yaml"
 	if v := os.Getenv("WECHAT_GATEWAY_CONFIG"); v != "" {
 		configFilename = v
 	}
@@ -44,7 +43,6 @@ func Init() {
 		log.Fatalf("Fatal error config file: %s\n", err)
 	}
 	viper.OnConfigChange(func(in fsnotify.Event) {
-		fmt.Printf("OnConfigChange: %+v", in)
 		err = viper.Unmarshal(Config)
 		if err != nil { // Handle errors reading the config file
 			log.Printf("Fatal error config file: %s\n", err)

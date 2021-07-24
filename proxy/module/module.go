@@ -12,3 +12,7 @@ func Init() {
 	logger.Init()
 	store.Init()
 }
+
+func Close() {
+	logger.Sync()
+}
