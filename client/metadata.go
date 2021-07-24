@@ -28,12 +28,8 @@ func (m *metadataClient) GetJsAPITicket() string {
 	return m.jsAPITicket
 }
 
-func (m *metadataClient) GetBaseURL() string {
-	return "https://api.weixin.qq.com"
-}
-
 // FromMetadata 从元数据中获取微信客户端
-func FromMetadata(metadata map[string]string) (Clienter, error) {
+func FromMetadata(metadata map[string]string) (Tokener, error) {
 	accessToken, ok := metadata[MetadataAccessTokenKey]
 	if !ok {
 		return nil, ErrMetadataNotFoundClient

@@ -13,7 +13,7 @@ import (
 )
 
 // NewHandleJssdkConfig 获取jssdk配置
-func NewHandleJssdkConfig(appID string, client client.Clienter) gin.HandlerFunc {
+func NewHandleJssdkConfig(appID string, token client.Tokener) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		uri := ctx.Query("url")
 		if uri == "" {
@@ -28,7 +28,7 @@ func NewHandleJssdkConfig(appID string, client client.Clienter) gin.HandlerFunc 
 		timestamp := time.Now().Unix()
 		noncestr := random.AZaz09(16)
 		uriLayout := "jsapi_ticket=%s&noncestr=%s&timestamp=%d&url=%s"
-		signatureParams := fmt.Sprintf(uriLayout, client.GetJsAPITicket(), noncestr, timestamp, string(uriDecode))
+		signatureParams := fmt.Sprintf(uriLayout, token.GetJsAPITicket(), noncestr, timestamp, string(uriDecode))
 		h := sha1.New()
 		io.WriteString(h, signatureParams)
 		ctx.JSON(200, map[string]interface{}{
