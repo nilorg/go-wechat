@@ -110,7 +110,7 @@ func NewCustomMenuRequest(toUser string, msg *CustomMenuMessage) *CustomMenuRequ
 }
 
 // send 发消息
-func (c *Client2) customSend(req interface{}) error {
+func (c *Client) customSend(req interface{}) error {
 	url := fmt.Sprintf("%s/cgi-bin/message/custom/send", c.opts.BaseURL)
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
@@ -120,22 +120,22 @@ func (c *Client2) customSend(req interface{}) error {
 }
 
 // SendText 发送文本消息
-func (c *Client2) CustomSendText(req *CustomTextRequest) error {
+func (c *Client) CustomSendText(req *CustomTextRequest) error {
 	return c.customSend(req)
 }
 
 // SendImage 发送图片消息
-func (c *Client2) CustomSendImage(req *CustomImageRequest) error {
+func (c *Client) CustomSendImage(req *CustomImageRequest) error {
 	return c.customSend(req)
 }
 
 // SendNews 发送图文消息（点击跳转到外链）
 // 图文消息条数限制在1条以内，注意，如果图文数超过1，则将会返回错误码45008。
-func (c *Client2) CustomSendNews(req *CustomNewsRequest) error {
+func (c *Client) CustomSendNews(req *CustomNewsRequest) error {
 	return c.customSend(req)
 }
 
 // SendMenu 发送菜单消息
-func (c *Client2) CustomSendMenu(req *CustomMenuRequest) error {
+func (c *Client) CustomSendMenu(req *CustomMenuRequest) error {
 	return c.customSend(req)
 }

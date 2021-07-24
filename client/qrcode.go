@@ -103,7 +103,7 @@ func NewQrcodeLimitQrcodeRequest(num uint) *QrcodeLimitQrcodeRequest {
 }
 
 // QrcodeCreateTemp 生成临时带参数的二维码
-func (c *Client2) QrcodeCreateTemp(req *QrcodeTempQrcodeRequest) (*QrcodeTempQrcodeReply, error) {
+func (c *Client) QrcodeCreateTemp(req *QrcodeTempQrcodeRequest) (*QrcodeTempQrcodeReply, error) {
 	url := fmt.Sprintf("%s/cgi-bin/qrcode/create", c.opts.BaseURL)
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
@@ -118,7 +118,7 @@ func (c *Client2) QrcodeCreateTemp(req *QrcodeTempQrcodeRequest) (*QrcodeTempQrc
 }
 
 // QrcodeDownload 下载二维码
-func (c *Client2) QrcodeDownload(ticket string) ([]byte, error) {
+func (c *Client) QrcodeDownload(ticket string) ([]byte, error) {
 	ticket = url.QueryEscape(ticket)
 	baseURL := "https://mp.weixin.qq.com"
 	if c.opts.Proxy {
@@ -134,7 +134,7 @@ func (c *Client2) QrcodeDownload(ticket string) ([]byte, error) {
 }
 
 // QrcodeCreateLimit 生成一个永久带参数的二维码
-func (c *Client2) QrcodeCreateLimit(req *QrcodeLimitQrcodeRequest) (*QrcodeLimitQrcodeReply, error) {
+func (c *Client) QrcodeCreateLimit(req *QrcodeLimitQrcodeRequest) (*QrcodeLimitQrcodeReply, error) {
 	url := fmt.Sprintf("%s/cgi-bin/qrcode/create", c.opts.BaseURL)
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())

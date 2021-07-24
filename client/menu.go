@@ -145,7 +145,7 @@ func NewMenuViewLimitedButton() *MenuViewLimitedButton {
 }
 
 // MenuCreate 创建菜单
-func (c *Client2) MenuCreate(btns []interface{}) error {
+func (c *Client) MenuCreate(btns []interface{}) error {
 	for i := 0; i < len(btns); i++ {
 		if !menuCheckButton(btns[i]) { // 检查类型
 			return ErrMenuButtonType
@@ -166,7 +166,7 @@ func (c *Client2) MenuCreate(btns []interface{}) error {
 }
 
 // MenuGetAll 获取所有菜单
-func (c *Client2) MenuGetAll() (*simplejson.Json, error) {
+func (c *Client) MenuGetAll() (*simplejson.Json, error) {
 	url := fmt.Sprintf("%s/cgi-bin/menu/get", c.opts.BaseURL)
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
@@ -179,7 +179,7 @@ func (c *Client2) MenuGetAll() (*simplejson.Json, error) {
 }
 
 // MenuDeleteAll 删除全部菜单
-func (c *Client2) MenuDeleteAll() error {
+func (c *Client) MenuDeleteAll() error {
 	url := fmt.Sprintf("%s/cgi-bin/menu/delete", c.opts.BaseURL)
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())

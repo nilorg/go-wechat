@@ -58,7 +58,7 @@ type MaterialGetTempFileReply struct {
 }
 
 // AddNews 新增永久图文素材
-func (c *Client2) MaterialAddNews(reqs []*MaterialNewsRequest) (*MaterialNewsReply, error) {
+func (c *Client) MaterialAddNews(reqs []*MaterialNewsRequest) (*MaterialNewsReply, error) {
 	url := fmt.Sprintf("%s/cgi-bin/material/add_news", c.opts.BaseURL)
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
@@ -76,7 +76,7 @@ func (c *Client2) MaterialAddNews(reqs []*MaterialNewsRequest) (*MaterialNewsRep
 
 // UploadImg 上传图文消息内的图片获取URL
 // 本接口所上传的图片不占用公众号的素材库中图片数量的5000个的限制。图片仅支持jpg/png格式，大小必须在1MB以下。
-func (c *Client2) MaterialUploadImg(filename string, srcFile io.Reader) (*MaterialUploadImgReply, error) {
+func (c *Client) MaterialUploadImg(filename string, srcFile io.Reader) (*MaterialUploadImgReply, error) {
 	url := fmt.Sprintf("%s/cgi-bin/media/uploadimg", c.opts.BaseURL)
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
@@ -92,7 +92,7 @@ func (c *Client2) MaterialUploadImg(filename string, srcFile io.Reader) (*Materi
 
 // UploadFile 新增其他类型永久素材
 // 通过POST表单来调用接口，表单id为media，包含需要上传的素材内容，有filename、filelength、content-type等信息。请注意：图片素材将进入公众平台官网素材管理模块中的默认分组。
-func (c *Client2) MaterialUploadFile(filename, fileType string, description *VideoDescription, srcFile io.Reader) (*MaterialUploadFileReply, error) {
+func (c *Client) MaterialUploadFile(filename, fileType string, description *VideoDescription, srcFile io.Reader) (*MaterialUploadFileReply, error) {
 	if fileType == MaterialTypeVideo && description == nil {
 		return nil, errors.New("请填写视频素材的描述信息")
 	}
@@ -118,7 +118,7 @@ func (c *Client2) MaterialUploadFile(filename, fileType string, description *Vid
 // 语音（voice）：2M，播放长度不超过60s，支持AMR\MP3格式
 // 视频（video）：10MB，支持MP4格式
 // 缩略图（thumb）：64KB，支持JPG格式
-func (c *Client2) MaterialUploadTempFile(filename, fileType string, srcFile io.Reader) (*MaterialUploadTempFileReply, error) {
+func (c *Client) MaterialUploadTempFile(filename, fileType string, srcFile io.Reader) (*MaterialUploadTempFileReply, error) {
 	url := fmt.Sprintf("%s/cgi-bin/media/upload?type=%s", c.opts.BaseURL, fileType)
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("&access_token=%s", c.opts.Token.GetAccessToken())
@@ -133,7 +133,7 @@ func (c *Client2) MaterialUploadTempFile(filename, fileType string, srcFile io.R
 }
 
 // GetTempFile 获取临时素材
-func (c *Client2) MaterialGetTempFile(mediaID string, dis io.Writer) (*MaterialGetTempFileReply, error) {
+func (c *Client) MaterialGetTempFile(mediaID string, dis io.Writer) (*MaterialGetTempFileReply, error) {
 	url := fmt.Sprintf("%s/cgi-bin/media/upload?media_id=%s", c.opts.BaseURL, mediaID)
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("&access_token=%s", c.opts.Token.GetAccessToken())

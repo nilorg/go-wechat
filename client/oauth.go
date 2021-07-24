@@ -47,7 +47,7 @@ type OAuthCode2SessionReponse struct {
 
 // GetAccessToken 获取 access_token
 // 通过code换取网页授权access_token
-func (c *Client2) GetAccessToken(code string) (*OAuthAccessTokenReply, error) {
+func (c *Client) GetAccessToken(code string) (*OAuthAccessTokenReply, error) {
 	url := fmt.Sprintf("%s/sns/oauth2/access_token", c.opts.BaseURL)
 	value := map[string]string{
 		"code":       code,
@@ -68,7 +68,7 @@ func (c *Client2) GetAccessToken(code string) (*OAuthAccessTokenReply, error) {
 
 // RefreshToken 刷新access_token
 // 由于access_token拥有较短的有效期，当access_token超时后，可以使用refresh_token进行刷新，refresh_token有效期为30天，当refresh_token失效之后，需要用户重新授权。
-func (c *Client2) RefreshToken(accessToken string) (*OAuthRefreshTokenReply, error) {
+func (c *Client) RefreshToken(accessToken string) (*OAuthRefreshTokenReply, error) {
 	url := fmt.Sprintf("%s/sns/oauth2/refresh_token", c.opts.BaseURL)
 	value := map[string]string{
 		"grant_type":    "refresh_token",
@@ -88,7 +88,7 @@ func (c *Client2) RefreshToken(accessToken string) (*OAuthRefreshTokenReply, err
 
 // GetUserInfo 拉取用户信息
 // 如果网页授权作用域为snsapi_userinfo，则此时开发者可以通过access_token和openid拉取用户信息了。
-func (c *Client2) GetUserInfo(accessToken, openID string) (*OAuthUserInfoReply, error) {
+func (c *Client) GetUserInfo(accessToken, openID string) (*OAuthUserInfoReply, error) {
 	url := fmt.Sprintf("%s/sns/userinfo", c.opts.BaseURL)
 	value := map[string]string{
 		"openid": openID,
@@ -107,7 +107,7 @@ func (c *Client2) GetUserInfo(accessToken, openID string) (*OAuthUserInfoReply, 
 }
 
 // CheckAccessToken 检查Token
-func (c *Client2) CheckAccessToken(accessToken, openID string) (bool, error) {
+func (c *Client) CheckAccessToken(accessToken, openID string) (bool, error) {
 	url := fmt.Sprintf("%s/sns/auth", c.opts.BaseURL)
 	value := map[string]string{
 		"openid": openID,
@@ -128,7 +128,7 @@ func (c *Client2) CheckAccessToken(accessToken, openID string) (bool, error) {
 // Code2Session 小程序登录凭证校验
 // 通过 wx.login 接口获得临时登录凭证 code 后传到开发者服务器调用此接口完成登录流程。
 // https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/login/auth.code2Session.html
-func (c *Client2) Code2Session(code string) (*OAuthCode2SessionReponse, error) {
+func (c *Client) Code2Session(code string) (*OAuthCode2SessionReponse, error) {
 	url := fmt.Sprintf("%s/sns/jscode2session", c.opts.BaseURL)
 	value := map[string]string{
 		"js_code":    code,

@@ -35,7 +35,7 @@ func NewTemplateReplyInfo(tmplID string) *TemplateReplyInfo {
 
 // Send 发送模板消息
 // https://mp.weixin.qq.com/debug/cgi-bin/readtmpl?t=tmplmsg/faq_tmpl
-func (c *Client2) TemplateSend(data *TemplateReplyInfo) error {
+func (c *Client) TemplateSend(data *TemplateReplyInfo) error {
 	url := fmt.Sprintf("%s/cgi-bin/message/template/send", c.opts.BaseURL)
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())

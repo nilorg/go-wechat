@@ -1,6 +1,6 @@
 package client
 
-type Client2 struct {
+type Client struct {
 	opts ClientOptions
 }
 
@@ -16,8 +16,8 @@ type ClientOptions struct {
 // ClientOption 为可选参数赋值的函数
 type ClientOption func(*ClientOptions)
 
-// NewClient2Options 创建可选参数
-func NewClient2Options(opts ...ClientOption) ClientOptions {
+// NewClientOptions 创建可选参数
+func NewClientOptions(opts ...ClientOption) ClientOptions {
 	opt := ClientOptions{
 		BaseURL: "https://api.weixin.qq.com",
 		Proxy:   false,
@@ -49,8 +49,8 @@ func ClientOptionToken(token Tokener) ClientOption {
 	}
 }
 
-func NewClient2(opts ...ClientOption) (client *Client2) {
-	client = new(Client2)
-	client.opts = NewClient2Options(opts...)
+func NewClient2(opts ...ClientOption) (client *Client) {
+	client = new(Client)
+	client.opts = NewClientOptions(opts...)
 	return
 }
