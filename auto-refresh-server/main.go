@@ -48,7 +48,7 @@ func main() {
 	<-ctx.Done()
 }
 
-func refresh(appID string, appSecret string, redisAccessTokenKey, redisJsAPITicketKey string) {
+func refresh(appID string, appSecret string, redisAccessTokenKey, redisJsAPITicketKey []string) {
 	token := refreshAccessToken(appID, appSecret, redisAccessTokenKey) // 刷新AccessToken
 	if token != "" {
 		refreshJsAPITicket(appID, token, redisJsAPITicketKey) // 刷新JsAPITicket
@@ -57,7 +57,7 @@ func refresh(appID string, appSecret string, redisAccessTokenKey, redisJsAPITick
 
 // refreshAccessToken ...
 // https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140183
-func refreshAccessToken(appID, appSecret, redisAccessTokenKey string) string {
+func refreshAccessToken(appID, appSecret string, redisAccessTokenKey []string) string {
 	result, err := client.Get("https://api.weixin.qq.com/cgi-bin/token", map[string]string{
 		"appid":      appID,
 		"secret":     appSecret,
@@ -69,9 +69,10 @@ func refreshAccessToken(appID, appSecret, redisAccessTokenKey string) string {
 	}
 	reply := new(client.AccessTokenReply)
 	json.Unmarshal(result, reply)
-
-	if err := store.RedisClient.Set(context.Background(), redisAccessTokenKey, reply.AccessToken, time.Second*time.Duration(reply.ExpiresIn)).Err(); err != nil {
-		logger.Sugared.Error("App:[%s]redisClient.Set %s Value: %s Error: %s", appID, redisAccessTokenKey, reply.AccessToken, err)
+	for _, v := range redisAccessTokenKey {
+		if err := store.RedisClient.Set(context.Background(), v, reply.AccessToken, time.Second*time.Duration(reply.ExpiresIn)).Err(); err != nil {
+			logger.Sugared.Error("App:[%s]redisClient.Set %s Value: %s Error: %s", appID, v, reply.AccessToken, err)
+		}
 	}
 	logger.Sugared.Debugf("App:[%s]最新AccessToken: %s", appID, reply.AccessToken)
 	return reply.AccessToken
@@ -79,7 +80,7 @@ func refreshAccessToken(appID, appSecret, redisAccessTokenKey string) string {
 
 // refreshJsAPITicket ...
 // https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115
-func refreshJsAPITicket(appID, token, redisJsAPITicketKey string) {
+func refreshJsAPITicket(appID, token string, redisJsAPITicketKey []string) {
 	result, err := client.Get("https://api.weixin.qq.com/cgi-bin/ticket/getticket", map[string]string{
 		"access_token": token,
 		"type":         "jsapi",
@@ -91,7 +92,9 @@ func refreshJsAPITicket(appID, token, redisJsAPITicketKey string) {
 	reply := new(client.JsAPITicketReply)
 	json.Unmarshal(result, reply)
 	logger.Sugared.Debugf("App:[%s]最新JsAPITicket: %s", appID, reply.Ticket)
-	if err := store.RedisClient.Set(context.Background(), redisJsAPITicketKey, reply.Ticket, time.Second*time.Duration(reply.ExpiresIn)).Err(); err != nil {
-		logger.Sugared.Errorf("App:[%s]redisClient.Set %s Value: %s Error: %s", appID, redisJsAPITicketKey, reply.Ticket, err)
+	for _, v := range redisJsAPITicketKey {
+		if err := store.RedisClient.Set(context.Background(), v, reply.Ticket, time.Second*time.Duration(reply.ExpiresIn)).Err(); err != nil {
+			logger.Sugared.Errorf("App:[%s]redisClient.Set %s Value: %s Error: %s", appID, v, reply.Ticket, err)
+		}
 	}
 }

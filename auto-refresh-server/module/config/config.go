@@ -13,11 +13,11 @@ type config struct {
 }
 
 type AppConfig struct {
-	ID                  string `mapstructure:"id"`
-	Secret              string `mapstructure:"secret"`
-	RedisAccessTokenKey string `mapstructure:"redis_access_token_key"`
-	RedisJsAPITicketKey string `mapstructure:"redis_js_api_ticket_key"`
-	RefreshDuration     int64  `mapstructure:"refresh_duration"`
+	ID                  string   `mapstructure:"id"`
+	Secret              string   `mapstructure:"secret"`
+	RedisAccessTokenKey []string `mapstructure:"redis_access_token_key"`
+	RedisJsAPITicketKey []string `mapstructure:"redis_js_api_ticket_key"`
+	RefreshDuration     int64    `mapstructure:"refresh_duration"`
 }
 
 var (
