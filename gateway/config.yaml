@@ -1,6 +1,12 @@
+redis:
+  address: "localhost:6379"
+  password: ""
+  db: 0
+
 apps:
-  xxxxx:
+  - id: "xxxxx"
     token: 0000000
     data_type: json #json/xml
     encryption_method: # 明文模式(plaintext),兼容模式(compatible),安全模式(secure)（推荐）
     encoding_aes_key: xxxxx
+    push: "http://localhost:8081"

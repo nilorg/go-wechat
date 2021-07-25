@@ -18,6 +18,7 @@ type AppConfig struct {
 	DataType         string `mapstructure:"data_type"`
 	EncryptionMethod string `mapstructure:"encryption_method"`
 	EncodingAESKey   string `mapstructure:"encoding_aes_key"`
+	Push             string `mapstructure:"push"`
 }
 
 var (
