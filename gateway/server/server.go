@@ -167,6 +167,7 @@ func AcceptPOST(ctx *gin.Context) {
 			return
 		}
 		logger.Sugared.Info(string(bytes))
+		buffer.Write(bytes)
 	} else {
 		defer ctx.Request.Body.Close()
 		_, err = io.Copy(&buffer, ctx.Request.Body)
