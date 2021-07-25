@@ -94,7 +94,6 @@ func proxy(ctx *gin.Context) {
 	proxyReq := *ctx.Request // 复制请求信息
 	proxyReq.URL = proxyURL  // 设置代理URL
 
-	//http事务，给一个请求返回一个响应
 	var proxyResp *http.Response
 	proxyResp, err = Transport.RoundTrip(&proxyReq)
 	if err != nil {

@@ -9,4 +9,4 @@ apps:
     data_type: json #json/xml
     encryption_method: # 明文模式(plaintext),兼容模式(compatible),安全模式(secure)（推荐）
     encoding_aes_key: xxxxx
-    push: "http://localhost:8081"
+    callback: "http://localhost:8081"
