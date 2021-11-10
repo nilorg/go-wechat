@@ -37,12 +37,12 @@ func main() {
 		refresh(app.ID, app.Secret, app.RedisAccessTokenKey, app.RedisJsAPITicketKey)
 		time.Sleep(time.Second)
 		ticker := time.NewTicker(time.Duration(app.RefreshDuration) * time.Second)
-		go func() { // 异步
+		go func(a *config.AppConfig) { // 异步
 			for range ticker.C {
-				logger.Sugared.Debug("App:[%s]刷新AccessToken和JsAPITicket", app.ID)
-				refresh(app.ID, app.Secret, app.RedisAccessTokenKey, app.RedisJsAPITicketKey)
+				logger.Sugared.Debugf("App:[%s]刷新AccessToken和JsAPITicket", a.ID)
+				refresh(a.ID, a.Secret, a.RedisAccessTokenKey, a.RedisJsAPITicketKey)
 			}
-		}()
+		}(app)
 		tickers[i] = ticker
 	}
 	<-ctx.Done()

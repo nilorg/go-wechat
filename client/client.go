@@ -49,7 +49,7 @@ func ClientOptionToken(token Tokener) ClientOption {
 	}
 }
 
-func NewClient2(opts ...ClientOption) (client *Client) {
+func NewClient(opts ...ClientOption) (client *Client) {
 	client = new(Client)
 	client.opts = NewClientOptions(opts...)
 	return

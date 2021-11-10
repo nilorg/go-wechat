@@ -5,9 +5,16 @@ redis:
 
 apps:
   - id: xxxx
-    secret: "ssss"
-    refresh_duration: 3600
+    secret: "xxxx"
+    refresh_duration: 30
     redis_access_token_key:
       - "nilorg:wechat:xxxx:token"
     redis_js_api_ticket_key:
       - "nilorg:wechat:xxxx:ticket"
+  - id: ssss
+    secret: "ssss"
+    refresh_duration: 30
+    redis_access_token_key:
+      - "nilorg:wechat:ssss:token"
+    redis_js_api_ticket_key:
+      - "nilorg:wechat:ssss:ticket"

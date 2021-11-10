@@ -31,8 +31,8 @@ func (c *TokenClient) startTicker() {
 	}()
 }
 
-// NewClient 创建客户端
-func NewClient(appID, appSecret string) *TokenClient {
+// NewTokenClient 创建客户端
+func NewTokenClient(appID, appSecret string) *TokenClient {
 	client := &TokenClient{
 		BaseURL:   "https://api.weixin.qq.com",
 		Proxy:     false,
