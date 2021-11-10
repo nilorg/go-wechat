@@ -1,3 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wechat-auto-refresh-server
+  namespace: nilorg
+data:
+  config.yaml: |
+    redis:
+      address: "localhost:6379"
+      password: ""
+      db: 0
+
+    apps:
+      - id: xxxx
+        secret: "ssss"
+        refresh_duration: 3600
+        redis_access_token_key: "nilorg:wechat:xxxx:token"
+        redis_js_api_ticket_key: "nilorg:wechat:xxxx:ticket"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,10 +39,3 @@ spec:
         - name: wechat-auto-refresh-server
           image: nilorg/wechat-auto-refresh-server:latest
           imagePullPolicy: Always
-          env:
-            - name: REDIS_ADDR
-              value: redis:6379
-            - name: WECHAT_APP_ID
-              value: 
-            - name: WECHAT_APP_SECRET
-              value: 
