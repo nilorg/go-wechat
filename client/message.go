@@ -149,6 +149,7 @@ type MessageTextAccept struct {
 	MsgType      cdata.CDATA `xml:"MsgType"`      // text
 	Content      cdata.CDATA `xml:"Content"`      // 文本消息内容
 	MsgID        int64       `xml:"MsgId"`        // 消息id，64位整型
+	BizmsgMenuID cdata.CDATA `xml:"bizmsgmenuid"` // 点击的菜单ID
 }
 
 // MessageTextAcceptParse ...
