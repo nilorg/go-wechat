@@ -91,11 +91,9 @@ func (c *Client) OAuthRefreshToken(accessToken string) (*OAuthRefreshTokenReply,
 func (c *Client) OAuthGetUserInfo(accessToken, openID string) (*OAuthUserInfoReply, error) {
 	url := fmt.Sprintf("%s/sns/userinfo", c.opts.BaseURL)
 	value := map[string]string{
-		"openid": openID,
-		"lang":   lang.ZH_CN,
-	}
-	if !c.opts.Proxy {
-		value["access_token"] = c.opts.Token.GetAccessToken()
+		"openid":       openID,
+		"lang":         lang.ZH_CN,
+		"access_token": accessToken,
 	}
 	result, err := Get(url, value)
 	if err != nil {
