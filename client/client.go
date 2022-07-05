@@ -49,6 +49,20 @@ func ClientOptionToken(token Tokener) ClientOption {
 	}
 }
 
+// ClientOptionAppID ...
+func ClientOptionAppID(appID string) ClientOption {
+	return func(o *ClientOptions) {
+		o.AppID = appID
+	}
+}
+
+// ClientOptionAppSecret ...
+func ClientOptionAppSecret(appSecret string) ClientOption {
+	return func(o *ClientOptions) {
+		o.AppSecret = appSecret
+	}
+}
+
 func NewClient(opts ...ClientOption) (client *Client) {
 	client = new(Client)
 	client.opts = NewClientOptions(opts...)
