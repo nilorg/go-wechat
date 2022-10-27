@@ -18,3 +18,4 @@ apps:
       - "nilorg:wechat:ssss:token"
     redis_js_api_ticket_key:
       - "nilorg:wechat:ssss:ticket"
+    type: qiye

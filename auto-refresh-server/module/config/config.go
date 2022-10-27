@@ -18,6 +18,7 @@ type AppConfig struct {
 	RedisAccessTokenKey []string `mapstructure:"redis_access_token_key"`
 	RedisJsAPITicketKey []string `mapstructure:"redis_js_api_ticket_key"`
 	RefreshDuration     int64    `mapstructure:"refresh_duration"`
+	Type                string   `mapstructure:"type"`
 }
 
 var (
