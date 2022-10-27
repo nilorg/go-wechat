@@ -76,6 +76,10 @@ func proxy(ctx *gin.Context) {
 	case "/cgi-bin/showqrcode":
 		proxyBaseURL = "https://mp.weixin.qq.com"
 		proxyQuery.Set("ticket", getRedisValue(appConfig.RedisJsAPITicketKey))
+	case "/cgi-bin/gettoken":
+		proxyBaseURL = "https://qyapi.weixin.qq.com"
+		proxyQuery.Set("corpid", appConfig.ID)
+		proxyQuery.Set("corpsecret", appConfig.Secret)
 	default:
 		proxyQuery.Set("access_token", getRedisValue(appConfig.RedisAccessTokenKey))
 	}
