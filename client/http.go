@@ -40,10 +40,15 @@ type VideoDescription struct {
 
 // Upload send post request.
 func Upload(uri, filename string, description *VideoDescription, srcFile io.Reader) (result []byte, err error) {
+	return upload(uri, "media", filename, description, srcFile)
+}
+
+// upload send post request.
+func upload(uri, fieldname, filename string, description *VideoDescription, srcFile io.Reader) (result []byte, err error) {
 	buf := new(bytes.Buffer)
 	// 文件
 	writer := multipart.NewWriter(buf)
-	formFile, err := writer.CreateFormFile("media", filename)
+	formFile, err := writer.CreateFormFile(fieldname, filename)
 	if err != nil {
 		return nil, err
 	}
