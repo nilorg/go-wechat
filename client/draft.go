@@ -21,13 +21,13 @@ type DraftArticle struct {
 	OnlyFansCanComment int    `json:"only_fans_can_comment"` // 是否粉丝才可评论，0所有人可评论(默认)，1粉丝才可评论
 }
 
-// DraftAddReply 新建草稿回复
-type DraftAddReply struct {
+// DraftAddResponse 新建草稿回复
+type DraftAddResponse struct {
 	MediaID string `json:"media_id"` // 上传后的获取标志，长度不固定，但不会超过 128 字符
 }
 
 // DraftAdd 新建草稿
-func (c *Client) DraftAdd(req *DraftAddRequest) (*DraftAddReply, error) {
+func (c *Client) DraftAdd(req *DraftAddRequest) (*DraftAddResponse, error) {
 	url := fmt.Sprintf("%s/cgi-bin/draft/add", c.opts.BaseURL)
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
@@ -36,16 +36,16 @@ func (c *Client) DraftAdd(req *DraftAddRequest) (*DraftAddReply, error) {
 	if err != nil {
 		return nil, err
 	}
-	reply := new(DraftAddReply)
-	err = json.Unmarshal(result, reply)
+	resp := new(DraftAddResponse)
+	err = json.Unmarshal(result, resp)
 	if err != nil {
 		return nil, err
 	}
-	return reply, nil
+	return resp, nil
 }
 
-// DraftGetReply 获取草稿回复
-type DraftGetReply struct {
+// DraftGetResponse 获取草稿回复
+type DraftGetResponse struct {
 	NewsItem []*DraftNewsItem `json:"news_item"` // 多图文消息应有多段 news_item 结构
 }
 
@@ -62,7 +62,7 @@ type DraftNewsItem struct {
 }
 
 // DraftAdd 新建草稿
-func (c *Client) DraftGet(mediaID string) (*DraftGetReply, error) {
+func (c *Client) DraftGet(mediaID string) (*DraftGetResponse, error) {
 	url := fmt.Sprintf("%s/cgi-bin/draft/add", c.opts.BaseURL)
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
@@ -73,10 +73,10 @@ func (c *Client) DraftGet(mediaID string) (*DraftGetReply, error) {
 	if err != nil {
 		return nil, err
 	}
-	reply := new(DraftGetReply)
-	err = json.Unmarshal(result, reply)
+	resp := new(DraftGetResponse)
+	err = json.Unmarshal(result, resp)
 	if err != nil {
 		return nil, err
 	}
-	return reply, nil
+	return resp, nil
 }
