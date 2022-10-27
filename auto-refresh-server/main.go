@@ -34,13 +34,13 @@ func main() {
 	}()
 	for i, app := range apps {
 		logger.Sugared.Debugf("初始化App:[%s]的AccessToken和JsAPITicket", app.ID)
-		refresh(app.ID, app.Secret, app.RedisAccessTokenKey, app.RedisJsAPITicketKey)
+		refresh(app.ID, app.Secret, app.RedisAccessTokenKey, app.RedisJsAPITicketKey, app.Type)
 		time.Sleep(time.Second)
 		ticker := time.NewTicker(time.Duration(app.RefreshDuration) * time.Second)
 		go func(a *config.AppConfig) { // 异步
 			for range ticker.C {
 				logger.Sugared.Debugf("App:[%s]刷新AccessToken和JsAPITicket", a.ID)
-				refresh(a.ID, a.Secret, a.RedisAccessTokenKey, a.RedisJsAPITicketKey)
+				refresh(a.ID, a.Secret, a.RedisAccessTokenKey, a.RedisJsAPITicketKey, app.Type)
 			}
 		}(app)
 		tickers[i] = ticker
@@ -48,10 +48,14 @@ func main() {
 	<-ctx.Done()
 }
 
-func refresh(appID string, appSecret string, redisAccessTokenKey, redisJsAPITicketKey []string) {
-	token := refreshAccessToken(appID, appSecret, redisAccessTokenKey) // 刷新AccessToken
-	if token != "" {
-		refreshJsAPITicket(appID, token, redisJsAPITicketKey) // 刷新JsAPITicket
+func refresh(appID string, appSecret string, redisAccessTokenKey, redisJsAPITicketKey []string, typ string) {
+	if typ == "qiye" {
+		refreshQiyeAccessToken(appID, appSecret, redisAccessTokenKey) // 刷新AccessToken
+	} else {
+		token := refreshAccessToken(appID, appSecret, redisAccessTokenKey) // 刷新AccessToken
+		if token != "" {
+			refreshJsAPITicket(appID, token, redisJsAPITicketKey) // 刷新JsAPITicket
+		}
 	}
 }
 
@@ -97,4 +101,25 @@ func refreshJsAPITicket(appID, token string, redisJsAPITicketKey []string) {
 			logger.Sugared.Errorf("App:[%s]redisClient.Set %s Value: %s Error: %s", appID, v, reply.Ticket, err)
 		}
 	}
+}
+
+// refreshQiyeAccessToken 刷新企业微信AccessToken
+// https://developer.work.weixin.qq.com/document/path/91039
+func refreshQiyeAccessToken(appID, appSecret string, redisAccessTokenKey []string) {
+	result, err := client.Get("https://qyapi.weixin.qq.com/cgi-bin/gettoken", map[string]string{
+		"corpid":     appID,
+		"corpsecret": appSecret,
+	})
+	if err != nil {
+		logger.Sugared.Debugf("App:企业微信[%s]刷新AccessToken错误：%v", appID, err)
+		return
+	}
+	reply := new(client.AccessTokenReply)
+	json.Unmarshal(result, reply)
+	for _, v := range redisAccessTokenKey {
+		if err := store.RedisClient.Set(context.Background(), v, reply.AccessToken, time.Second*time.Duration(reply.ExpiresIn)).Err(); err != nil {
+			logger.Sugared.Error("App:企业微信[%s]redisClient.Set %s Value: %s Error: %s", appID, v, reply.AccessToken, err)
+		}
+	}
+	logger.Sugared.Debugf("App:企业微信[%s]最新AccessToken: %s", appID, reply.AccessToken)
 }

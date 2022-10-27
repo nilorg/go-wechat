@@ -76,11 +76,37 @@ func AcceptGET(ctx *gin.Context) {
 		ctx.Status(400)
 		return
 	}
-	if model.Signature != msgCrypter.GetSignature(convert.ToString(model.Timestamp), convert.ToString(model.Nonce), "") {
-		ctx.Status(400)
-		return
+	if model.Signature != "" {
+		if model.Signature != msgCrypter.GetSignature(convert.ToString(model.Timestamp), convert.ToString(model.Nonce), "") {
+			logger.Sugared.Warn("Signature msgCrypter.GetSignature")
+			ctx.Status(400)
+			return
+		}
+		ctx.String(http.StatusOK, model.Echostr)
+	} else if model.MsgSignature != "" {
+		if model.MsgSignature != msgCrypter.GetSignature(convert.ToString(model.Timestamp), convert.ToString(model.Nonce), model.Echostr) {
+			logger.Sugared.Warn("MsgSignature msgCrypter.GetSignature")
+			ctx.Status(400)
+			return
+		}
+		// 解析加密报文数据
+		var encryptBytes []byte
+		var inAppID string
+		encryptBytes, inAppID, err = msgCrypter.Decrypt(model.Echostr)
+		if err != nil {
+			logger.Sugared.Warn("加密报文解析失败")
+			ctx.Status(400)
+			return
+		}
+		if appID != inAppID {
+			logger.Sugared.Warn("加密报文AppID不匹配")
+			ctx.Status(400)
+			return
+		}
+		// 输出解密后的报文
+		logger.Sugared.Infof("encryptBytes: ", string(encryptBytes))
+		ctx.String(http.StatusOK, string(encryptBytes))
 	}
-	ctx.String(http.StatusOK, model.Echostr)
 }
 
 // checkAppID 检查AppID
