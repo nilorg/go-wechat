@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -21,7 +20,7 @@ func Post(url, contentType string, args map[string]string) (result string, err e
 		return
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return
 	}
@@ -41,10 +40,15 @@ type VideoDescription struct {
 
 // Upload send post request.
 func Upload(uri, filename string, description *VideoDescription, srcFile io.Reader) (result []byte, err error) {
+	return upload(uri, "media", filename, description, srcFile)
+}
+
+// upload send post request.
+func upload(uri, fieldname, filename string, description *VideoDescription, srcFile io.Reader) (result []byte, err error) {
 	buf := new(bytes.Buffer)
 	// 文件
 	writer := multipart.NewWriter(buf)
-	formFile, err := writer.CreateFormFile("media", filename)
+	formFile, err := writer.CreateFormFile(fieldname, filename)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +68,7 @@ func Upload(uri, filename string, description *VideoDescription, srcFile io.Read
 		return
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return
 	}
@@ -86,7 +90,7 @@ func Download(uri string, dis io.Writer) (result []byte, err error) {
 	defer resp.Body.Close()
 	ctype := resp.Header.Get("Content-Type")
 	if strings.Contains(strings.ToLower(ctype), "application/json") {
-		result, err = ioutil.ReadAll(resp.Body)
+		result, err = io.ReadAll(resp.Body)
 		if err != nil {
 			return
 		}
@@ -114,7 +118,7 @@ func PostJSON(url string, jsonObject interface{}) (result []byte, err error) {
 		return
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return
 	}
@@ -136,7 +140,7 @@ func Get(url string, args map[string]string) (result []byte, err error) {
 		return
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return
 	}
