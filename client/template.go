@@ -11,36 +11,42 @@ type TemplateDataItem struct {
 	Color string `json:"color"`
 }
 
-// TemplateReplyInfo 消息模板回复
-type TemplateReplyInfo struct {
-	ToUser   string                       `json:"touser"`
-	ID       string                       `json:"template_id"`
-	URL      string                       `json:"url"`
-	TopColor string                       `json:"topcolor"`
-	Data     map[string]*TemplateDataItem `json:"data"`
+type TemplateMiniProgram struct {
+	AppID    string `json:"appid"`
+	PagePath string `json:"pagepath"`
+}
+
+// TemplateSendRequest 消息模板
+type TemplateSendRequest struct {
+	ToUser      string                       `json:"touser"`
+	ID          string                       `json:"template_id"`
+	URL         string                       `json:"url"`
+	Data        map[string]*TemplateDataItem `json:"data"`
+	MiniProgram *TemplateMiniProgram         `json:"miniprogram"`
+	ClientMsgID string                       `json:"client_msg_id"`
 }
 
 // JSON ...
-func (r *TemplateReplyInfo) JSON() string {
+func (r *TemplateSendRequest) JSON() string {
 	bytes, _ := json.Marshal(r)
 	return string(bytes)
 }
 
 // NewTemplateReplyInfo ...
-func NewTemplateReplyInfo(tmplID string) *TemplateReplyInfo {
-	return &TemplateReplyInfo{
+func NewTemplateReplyInfo(tmplID string) *TemplateSendRequest {
+	return &TemplateSendRequest{
 		ID: tmplID,
 	}
 }
 
 // Send 发送模板消息
-// https://mp.weixin.qq.com/debug/cgi-bin/readtmpl?t=tmplmsg/faq_tmpl
-func (c *Client) TemplateSend(data *TemplateReplyInfo) error {
+// https://developers.weixin.qq.com/doc/offiaccount/Message_Management/Template_Message_Interface.html#5
+func (c *Client) TemplateSend(req *TemplateSendRequest) error {
 	url := fmt.Sprintf("%s/cgi-bin/message/template/send", c.opts.BaseURL)
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	_, err := PostJSON(url, data)
+	_, err := PostJSON(url, req)
 	if err != nil {
 		return err
 	}
