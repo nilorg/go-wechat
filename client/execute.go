@@ -3,8 +3,9 @@ package client
 import (
 	"errors"
 
+	"net/http"
+
 	simplejson "github.com/bitly/go-simplejson"
-	"github.com/nilorg/sdk/http"
 )
 
 var (
@@ -18,7 +19,7 @@ var (
 type Parameter map[string]string
 
 // Execute 执行
-func Execute(url string, param Parameter) (json *simplejson.Json, err error) {
+func Execute(httpClient *http.Client, url string, param Parameter) (json *simplejson.Json, err error) {
 	err = checkConfig()
 	if err != nil {
 		return
@@ -26,7 +27,7 @@ func Execute(url string, param Parameter) (json *simplejson.Json, err error) {
 	param["appid"] = AppID
 	param["secret"] = AppSecret
 
-	result, err := http.Get(url, param)
+	result, err := Get(httpClient, url, param)
 	if err != nil {
 		return
 	}

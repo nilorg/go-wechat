@@ -11,11 +11,11 @@ import (
 )
 
 // Post send post request.
-func Post(url, contentType string, args map[string]string) (result string, err error) {
+func Post(httpClient *http.Client, url, contentType string, args map[string]string) (result string, err error) {
 	if contentType == "" {
 		contentType = "application/x-www-form-urlencoded"
 	}
-	resp, err := http.Post(url, contentType, strings.NewReader(argsEncode(args)))
+	resp, err := httpClient.Post(url, contentType, strings.NewReader(argsEncode(args)))
 	if err != nil {
 		return
 	}
@@ -39,12 +39,12 @@ type VideoDescription struct {
 }
 
 // Upload send post request.
-func Upload(uri, filename string, description *VideoDescription, srcFile io.Reader) (result []byte, err error) {
-	return upload(uri, "media", filename, description, srcFile)
+func Upload(httpClient *http.Client, uri, filename string, description *VideoDescription, srcFile io.Reader) (result []byte, err error) {
+	return upload(httpClient, uri, "media", filename, description, srcFile)
 }
 
 // upload send post request.
-func upload(uri, fieldname, filename string, description *VideoDescription, srcFile io.Reader) (result []byte, err error) {
+func upload(httpClient *http.Client, uri, fieldname, filename string, description *VideoDescription, srcFile io.Reader) (result []byte, err error) {
 	buf := new(bytes.Buffer)
 	// 文件
 	writer := multipart.NewWriter(buf)
@@ -63,7 +63,7 @@ func upload(uri, fieldname, filename string, description *VideoDescription, srcF
 	}
 	writer.Close() // 发送之前必须调用Close()以写入结尾行
 
-	resp, err := http.Post(uri, contentType, buf)
+	resp, err := httpClient.Post(uri, contentType, buf)
 	if err != nil {
 		return
 	}
@@ -81,9 +81,9 @@ func upload(uri, fieldname, filename string, description *VideoDescription, srcF
 }
 
 // Download 下载非视频文件
-func Download(uri string, dis io.Writer) (result []byte, err error) {
+func Download(httpClient *http.Client, uri string, dis io.Writer) (result []byte, err error) {
 	var resp *http.Response
-	resp, err = http.Get(uri)
+	resp, err = httpClient.Get(uri)
 	if err != nil {
 		return
 	}
@@ -105,7 +105,7 @@ func Download(uri string, dis io.Writer) (result []byte, err error) {
 }
 
 // PostJSON send post request.
-func PostJSON(url string, jsonObject interface{}) (result []byte, err error) {
+func PostJSON(httpClient *http.Client, url string, jsonObject interface{}) (result []byte, err error) {
 	buf := new(bytes.Buffer)
 	hjson := json.NewEncoder(buf)
 	hjson.SetEscapeHTML(false)
@@ -113,7 +113,7 @@ func PostJSON(url string, jsonObject interface{}) (result []byte, err error) {
 	if err != nil {
 		return
 	}
-	resp, err := http.Post(url, "application/json", buf)
+	resp, err := httpClient.Post(url, "application/json", buf)
 	if err != nil {
 		return
 	}
@@ -131,11 +131,11 @@ func PostJSON(url string, jsonObject interface{}) (result []byte, err error) {
 }
 
 // Get send get request.
-func Get(url string, args map[string]string) (result []byte, err error) {
+func Get(httpClient *http.Client, url string, args map[string]string) (result []byte, err error) {
 	if args != nil {
 		url += "?" + argsEncode(args)
 	}
-	resp, err := http.Get(url)
+	resp, err := httpClient.Get(url)
 	if err != nil {
 		return
 	}

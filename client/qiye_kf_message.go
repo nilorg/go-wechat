@@ -128,7 +128,7 @@ func (c *QiyeClient) KfSyncMessage(req *QiyeKfSyncMessageRequest) (*QiyeKfSyncMe
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	result, err := PostJSON(url, req)
+	result, err := PostJSON(c.opts.HttpClient, url, req)
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +166,7 @@ func (c *QiyeClient) KfSendMessage(req *QiyeKfSendMessageRequest) (*QiyeKfSendMe
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	result, err := PostJSON(url, req)
+	result, err := PostJSON(c.opts.HttpClient, url, req)
 	if err != nil {
 		return nil, err
 	}
@@ -196,7 +196,7 @@ func (c *QiyeClient) KfSendMsgOnEvent(req *QiyeKfSendMsgOnEventRequest) (*QiyeKf
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	result, err := PostJSON(url, req)
+	result, err := PostJSON(c.opts.HttpClient, url, req)
 	if err != nil {
 		return nil, err
 	}

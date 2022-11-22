@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"sync"
 	"time"
 )
@@ -17,6 +18,7 @@ type QiyeTokenClient struct {
 	Proxy       bool
 	ticker      *time.Ticker
 	rwMutex     *sync.RWMutex // 读写锁
+	HttpClient  *http.Client
 }
 
 // startTicker 启动打点任务
@@ -32,12 +34,13 @@ func (c *QiyeTokenClient) startTicker() {
 // NewQiyeTokenClient 创建客户端
 func NewQiyeTokenClient(appID, appSecret string) *QiyeTokenClient {
 	client := &QiyeTokenClient{
-		BaseURL:   "https://qyapi.weixin.qq.com",
-		Proxy:     false,
-		appID:     appID,
-		appSecret: appSecret,
-		ticker:    time.NewTicker(time.Hour), // 1小时执行一次
-		rwMutex:   &sync.RWMutex{},
+		BaseURL:    "https://qyapi.weixin.qq.com",
+		Proxy:      false,
+		appID:      appID,
+		appSecret:  appSecret,
+		ticker:     time.NewTicker(time.Hour), // 1小时执行一次
+		rwMutex:    &sync.RWMutex{},
+		HttpClient: http.DefaultClient,
 	}
 	client.refreshAccessToken() // 刷新AccessToken
 	client.startTicker()
@@ -60,7 +63,7 @@ func (c *QiyeTokenClient) refreshAccessToken() {
 		value["corpid"] = c.appID
 		value["corpsecret"] = c.appSecret
 	}
-	result, err := Get(url, value)
+	result, err := Get(c.HttpClient, url, value)
 	if err != nil {
 		log.Printf("刷新AccessToken错误：%v\n", err)
 		// c.accessToken = ""

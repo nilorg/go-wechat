@@ -31,7 +31,7 @@ func (c *Client) WxaGenerateUrlScheme(req *WxaGenerateUrlSchemeRequest) (*WxaGen
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	result, err := PostJSON(url, req)
+	result, err := PostJSON(c.opts.HttpClient, url, req)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (c *Client) WxaGenerateUrlLink(req *WxaGenerateUrlLinkRequest) (*WxaGenerat
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	result, err := PostJSON(url, req)
+	result, err := PostJSON(c.opts.HttpClient, url, req)
 	if err != nil {
 		return nil, err
 	}

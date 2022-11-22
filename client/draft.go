@@ -32,7 +32,7 @@ func (c *Client) DraftAdd(req *DraftAddRequest) (*DraftAddResponse, error) {
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	result, err := PostJSON(url, req)
+	result, err := PostJSON(c.opts.HttpClient, url, req)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (c *Client) DraftGet(mediaID string) (*DraftGetResponse, error) {
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	result, err := PostJSON(url, map[string]interface{}{
+	result, err := PostJSON(c.opts.HttpClient, url, map[string]interface{}{
 		"media_id": mediaID,
 	})
 	if err != nil {

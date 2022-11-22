@@ -33,7 +33,7 @@ func (c *QiyeClient) QiyeMedialUpload(filename string, fileType QiyeMedialType, 
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("&access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	result, err := Upload(url, filename, nil, srcFile)
+	result, err := Upload(c.opts.HttpClient, url, filename, nil, srcFile)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (c *QiyeClient) QiyeMedialGet(mediaID string, dis io.Writer) error {
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("&access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	_, err := Download(url, dis)
+	_, err := Download(c.opts.HttpClient, url, dis)
 	return err
 }
 
@@ -59,6 +59,6 @@ func (c *QiyeClient) QiyeMedialGetJsSdk(mediaID string, dis io.Writer) error {
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("&access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	_, err := Download(url, dis)
+	_, err := Download(c.opts.HttpClient, url, dis)
 	return err
 }
