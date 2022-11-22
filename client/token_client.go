@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"sync"
 	"time"
 )
@@ -18,6 +19,7 @@ type TokenClient struct {
 	Proxy       bool
 	ticker      *time.Ticker
 	rwMutex     *sync.RWMutex // 读写锁
+	HttpClient  *http.Client
 }
 
 // startTicker 启动打点任务
@@ -34,12 +36,13 @@ func (c *TokenClient) startTicker() {
 // NewTokenClient 创建客户端
 func NewTokenClient(appID, appSecret string) *TokenClient {
 	client := &TokenClient{
-		BaseURL:   "https://api.weixin.qq.com",
-		Proxy:     false,
-		appID:     appID,
-		appSecret: appSecret,
-		ticker:    time.NewTicker(time.Hour), // 1小时执行一次
-		rwMutex:   &sync.RWMutex{},
+		BaseURL:    "https://api.weixin.qq.com",
+		Proxy:      false,
+		appID:      appID,
+		appSecret:  appSecret,
+		ticker:     time.NewTicker(time.Hour), // 1小时执行一次
+		rwMutex:    &sync.RWMutex{},
+		HttpClient: http.DefaultClient,
 	}
 	client.refreshAccessToken() // 刷新AccessToken
 	client.refreshJsAPITicket()
@@ -71,7 +74,7 @@ func (c *TokenClient) refreshAccessToken() {
 		value["appid"] = c.appID
 		value["secret"] = c.appSecret
 	}
-	result, err := Get(url, value)
+	result, err := Get(c.HttpClient, url, value)
 	if err != nil {
 		log.Printf("刷新AccessToken错误：%v\n", err)
 		// c.accessToken = ""
@@ -107,7 +110,7 @@ func (c *TokenClient) refreshJsAPITicket() {
 	if !c.Proxy {
 		value["access_token"] = c.GetAccessToken()
 	}
-	result, err := Get(url, value)
+	result, err := Get(c.HttpClient, url, value)
 	if err != nil {
 		log.Printf("刷新Ticket错误：%v", err)
 		// c.jsAPITicket = ""

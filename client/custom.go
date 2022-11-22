@@ -115,7 +115,7 @@ func (c *Client) customSend(req interface{}) error {
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	_, err := PostJSON(url, req)
+	_, err := PostJSON(c.opts.HttpClient, url, req)
 	return err
 }
 

@@ -46,7 +46,7 @@ func (c *Client) TemplateSend(req *TemplateSendRequest) error {
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	_, err := PostJSON(url, req)
+	_, err := PostJSON(c.opts.HttpClient, url, req)
 	if err != nil {
 		return err
 	}

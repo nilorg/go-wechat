@@ -32,3 +32,10 @@ kubectl create ns nilorg
 # 修改deployment.yaml中的配置文件
 kubectl apply -f deployment.yaml
 ```
+
+# 设置HTTP(S)代理
+
+```bash
+export HTTP_PROXY=""
+export HTTPS_PROXY=""
+```

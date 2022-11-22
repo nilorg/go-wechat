@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 	"os/signal"
 	"syscall"
 	"time"
@@ -62,7 +63,7 @@ func refresh(appID string, appSecret string, redisAccessTokenKey, redisJsAPITick
 // refreshAccessToken ...
 // https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140183
 func refreshAccessToken(appID, appSecret string, redisAccessTokenKey []string) string {
-	result, err := client.Get("https://api.weixin.qq.com/cgi-bin/token", map[string]string{
+	result, err := client.Get(http.DefaultClient, "https://api.weixin.qq.com/cgi-bin/token", map[string]string{
 		"appid":      appID,
 		"secret":     appSecret,
 		"grant_type": "client_credential",
@@ -85,7 +86,7 @@ func refreshAccessToken(appID, appSecret string, redisAccessTokenKey []string) s
 // refreshJsAPITicket ...
 // https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115
 func refreshJsAPITicket(appID, token string, redisJsAPITicketKey []string) {
-	result, err := client.Get("https://api.weixin.qq.com/cgi-bin/ticket/getticket", map[string]string{
+	result, err := client.Get(http.DefaultClient, "https://api.weixin.qq.com/cgi-bin/ticket/getticket", map[string]string{
 		"access_token": token,
 		"type":         "jsapi",
 	})
@@ -106,7 +107,7 @@ func refreshJsAPITicket(appID, token string, redisJsAPITicketKey []string) {
 // refreshQiyeAccessToken 刷新企业微信AccessToken
 // https://developer.work.weixin.qq.com/document/path/91039
 func refreshQiyeAccessToken(appID, appSecret string, redisAccessTokenKey []string) {
-	result, err := client.Get("https://qyapi.weixin.qq.com/cgi-bin/gettoken", map[string]string{
+	result, err := client.Get(http.DefaultClient, "https://qyapi.weixin.qq.com/cgi-bin/gettoken", map[string]string{
 		"corpid":     appID,
 		"corpsecret": appSecret,
 	})

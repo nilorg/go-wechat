@@ -158,7 +158,7 @@ func (c *Client) MenuCreate(btns []interface{}) error {
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	_, err := PostJSON(url, data)
+	_, err := PostJSON(c.opts.HttpClient, url, data)
 	if err != nil {
 		return err
 	}
@@ -171,7 +171,7 @@ func (c *Client) MenuGetAll() (*simplejson.Json, error) {
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	bytes, err := Get(url, nil)
+	bytes, err := Get(c.opts.HttpClient, url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -184,7 +184,7 @@ func (c *Client) MenuDeleteAll() error {
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	_, err := Get(url, nil)
+	_, err := Get(c.opts.HttpClient, url, nil)
 	if err != nil {
 		return err
 	}

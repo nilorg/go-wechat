@@ -108,7 +108,7 @@ func (c *Client) QrcodeCreateTemp(req *QrcodeTempQrcodeRequest) (*QrcodeTempQrco
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	result, err := PostJSON(url, req)
+	result, err := PostJSON(c.opts.HttpClient, url, req)
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +124,7 @@ func (c *Client) QrcodeDownload(ticket string) ([]byte, error) {
 	if c.opts.Proxy {
 		baseURL = c.opts.BaseURL
 	}
-	result, err := Get(fmt.Sprintf("%s/cgi-bin/showqrcode", baseURL), map[string]string{
+	result, err := Get(c.opts.HttpClient, fmt.Sprintf("%s/cgi-bin/showqrcode", baseURL), map[string]string{
 		"ticket": ticket,
 	})
 	if err != nil {
@@ -139,7 +139,7 @@ func (c *Client) QrcodeCreateLimit(req *QrcodeLimitQrcodeRequest) (*QrcodeLimitQ
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	result, err := PostJSON(url, req)
+	result, err := PostJSON(c.opts.HttpClient, url, req)
 	if err != nil {
 		return nil, err
 	}

@@ -63,7 +63,7 @@ func (c *Client) MaterialAddNews(reqs []*MaterialNewsRequest) (*MaterialNewsRepl
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	result, err := PostJSON(url, map[string]interface{}{
+	result, err := PostJSON(c.opts.HttpClient, url, map[string]interface{}{
 		"articles": reqs,
 	})
 	if err != nil {
@@ -81,7 +81,7 @@ func (c *Client) MaterialUploadImg(filename string, srcFile io.Reader) (*Materia
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("?access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	result, err := Upload(url, filename, nil, srcFile)
+	result, err := Upload(c.opts.HttpClient, url, filename, nil, srcFile)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ func (c *Client) MaterialUploadFile(filename, fileType string, description *Vide
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("&access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	result, err := Upload(url, filename, description, srcFile)
+	result, err := Upload(c.opts.HttpClient, url, filename, description, srcFile)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func (c *Client) MaterialUploadTempFile(filename, fileType string, srcFile io.Re
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("&access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	result, err := Upload(url, filename, nil, srcFile)
+	result, err := Upload(c.opts.HttpClient, url, filename, nil, srcFile)
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +138,7 @@ func (c *Client) MaterialGetTempFile(mediaID string, dis io.Writer) (*MaterialGe
 	if !c.opts.Proxy {
 		url += fmt.Sprintf("&access_token=%s", c.opts.Token.GetAccessToken())
 	}
-	result, err := Download(url, dis)
+	result, err := Download(c.opts.HttpClient, url, dis)
 	if err != nil {
 		return nil, err
 	}

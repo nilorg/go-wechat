@@ -57,7 +57,7 @@ func (c *Client) OAuthGetAccessToken(code string) (*OAuthAccessTokenReply, error
 		value["appid"] = c.opts.AppID
 		value["secret"] = c.opts.AppSecret
 	}
-	result, err := Get(url, value)
+	result, err := Get(c.opts.HttpClient, url, value)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (c *Client) OAuthRefreshToken(accessToken string) (*OAuthRefreshTokenReply,
 	if !c.opts.Proxy {
 		value["appid"] = c.opts.AppID
 	}
-	result, err := Get(url, value)
+	result, err := Get(c.opts.HttpClient, url, value)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +95,7 @@ func (c *Client) OAuthGetUserInfo(accessToken, openID string) (*OAuthUserInfoRep
 		"lang":         lang.ZH_CN,
 		"access_token": accessToken,
 	}
-	result, err := Get(url, value)
+	result, err := Get(c.opts.HttpClient, url, value)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +113,7 @@ func (c *Client) OAuthCheckAccessToken(accessToken, openID string) (bool, error)
 	if !c.opts.Proxy {
 		value["access_token"] = c.opts.Token.GetAccessToken()
 	}
-	_, err := Get(url, value)
+	_, err := Get(c.opts.HttpClient, url, value)
 	if err != nil {
 		if err.Error() == "ok" {
 			return true, nil
@@ -136,7 +136,7 @@ func (c *Client) OAuthCode2Session(code string) (*OAuthCode2SessionReponse, erro
 		value["appid"] = c.opts.AppID
 		value["secret"] = c.opts.AppSecret
 	}
-	result, err := Get(url, value)
+	result, err := Get(c.opts.HttpClient, url, value)
 	if err != nil {
 		return nil, err
 	}
