@@ -6,7 +6,7 @@ require (
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/fsnotify/fsnotify v1.4.9
-	github.com/gin-gonic/gin v1.7.2
+	github.com/gin-gonic/gin v1.7.7
 	github.com/go-playground/validator/v10 v10.7.0 // indirect
 	github.com/go-redis/redis/v8 v8.11.0
 	github.com/heroicyang/wechat-crypter v0.0.0-20150326022142-2d3eafa552ae
