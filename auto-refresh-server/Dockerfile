@@ -1,11 +1,13 @@
 #build stage
-FROM nilorg/golang:1.16.4 AS builder
+FROM golang:1.18-alpine AS builder
 WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
 COPY . .
-RUN go build -o ./bin/app -i ./auto-refresh-server/main.go
+RUN CGO_ENABLED=0 go build -ldflags="-w -s" -o ./bin/app ./auto-refresh-server/main.go
 
 #final stage
-FROM nilorg/alpine:latest
+FROM alpine:latest
 WORKDIR /workspace
 
 COPY --from=builder /src/bin/app .
