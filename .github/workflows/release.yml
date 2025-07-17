@@ -1,0 +1,98 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20'
+
+    - name: Cache Go modules
+      uses: actions/cache@v3
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Run tests
+      run: go test ./...
+
+    - name: Build binaries for all services
+      run: |
+        mkdir -p dist
+        
+        # Build auto-refresh-server for different platforms
+        GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o dist/auto-refresh-server-linux-amd64 ./auto-refresh-server/main.go
+        GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o dist/auto-refresh-server-linux-arm64 ./auto-refresh-server/main.go
+        GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o dist/auto-refresh-server-darwin-amd64 ./auto-refresh-server/main.go
+        GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o dist/auto-refresh-server-darwin-arm64 ./auto-refresh-server/main.go
+        GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o dist/auto-refresh-server-windows-amd64.exe ./auto-refresh-server/main.go
+        
+        # Build gateway for different platforms
+        GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o dist/gateway-linux-amd64 ./gateway/main.go
+        GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o dist/gateway-linux-arm64 ./gateway/main.go
+        GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o dist/gateway-darwin-amd64 ./gateway/main.go
+        GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o dist/gateway-darwin-arm64 ./gateway/main.go
+        GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o dist/gateway-windows-amd64.exe ./gateway/main.go
+        
+        # Build proxy for different platforms
+        GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o dist/proxy-linux-amd64 ./proxy/main.go
+        GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o dist/proxy-linux-arm64 ./proxy/main.go
+        GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o dist/proxy-darwin-amd64 ./proxy/main.go
+        GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o dist/proxy-darwin-arm64 ./proxy/main.go
+        GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o dist/proxy-windows-amd64.exe ./proxy/main.go
+
+    - name: Generate checksums
+      run: |
+        cd dist
+        sha256sum * > checksums.txt
+
+    - name: Generate changelog
+      id: changelog
+      run: |
+        TAG=${GITHUB_REF#refs/tags/}
+        echo "tag=$TAG" >> $GITHUB_OUTPUT
+        
+        if git describe --tags --abbrev=0 HEAD^ >/dev/null 2>&1; then
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^)
+          echo "## Changes in $TAG" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          git log --pretty=format:"- %s (%h)" $PREVIOUS_TAG..HEAD >> CHANGELOG.md
+        else
+          echo "## $TAG - Initial Release" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "First release of go-wechat v2 with the following services:" >> CHANGELOG.md
+          echo "- auto-refresh-server: 自动刷新 Token 服务器" >> CHANGELOG.md
+          echo "- gateway: 消息分发网关" >> CHANGELOG.md
+          echo "- proxy: 客户端代理" >> CHANGELOG.md
+        fi
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: Release ${{ steps.changelog.outputs.tag }}
+        body_path: CHANGELOG.md
+        files: |
+          dist/*
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,94 @@
+name: Dev Build
+
+on:
+  workflow_dispatch:  # Manual trigger
+    inputs:
+      build_target:
+        description: 'Which service to build'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+        - all
+        - auto-refresh-server
+        - gateway
+        - proxy
+
+jobs:
+  dev-build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build auto-refresh-server (dev)
+      if: ${{ github.event.inputs.build_target == 'all' || github.event.inputs.build_target == 'auto-refresh-server' }}
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./auto-refresh-server/Dockerfile
+        push: true
+        tags: |
+          nilorg/wechat-auto-refresh-server:dev
+          nilorg/wechat-auto-refresh-server:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build gateway (dev)
+      if: ${{ github.event.inputs.build_target == 'all' || github.event.inputs.build_target == 'gateway' }}
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./gateway/Dockerfile
+        push: true
+        tags: |
+          nilorg/wechat-gateway:dev
+          nilorg/wechat-gateway:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build proxy (dev)
+      if: ${{ github.event.inputs.build_target == 'all' || github.event.inputs.build_target == 'proxy' }}
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./proxy/Dockerfile
+        push: true
+        tags: |
+          nilorg/wechat-proxy:dev
+          nilorg/wechat-proxy:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build summary
+      run: |
+        echo "## Dev Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo "Build target: ${{ github.event.inputs.build_target }}" >> $GITHUB_STEP_SUMMARY
+        echo "Commit SHA: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Built images:" >> $GITHUB_STEP_SUMMARY
+        
+        if [[ "${{ github.event.inputs.build_target }}" == "all" || "${{ github.event.inputs.build_target }}" == "auto-refresh-server" ]]; then
+          echo "- nilorg/wechat-auto-refresh-server:dev" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [[ "${{ github.event.inputs.build_target }}" == "all" || "${{ github.event.inputs.build_target }}" == "gateway" ]]; then
+          echo "- nilorg/wechat-gateway:dev" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [[ "${{ github.event.inputs.build_target }}" == "all" || "${{ github.event.inputs.build_target }}" == "proxy" ]]; then
+          echo "- nilorg/wechat-proxy:dev" >> $GITHUB_STEP_SUMMARY
+        fi
